@@ -1,0 +1,26 @@
+version: '3.1'
+services:
+    app:
+        build:
+            context: ./
+            dockerfile: app.docker
+        volumes:
+            - ./:/var/www
+        ports:
+            - "6969:1337"
+        tty: true
+        links:
+            - mongodb
+            - database
+    mongodb:
+        image: mongo:4.2.14
+        ports:
+            - "28000:27017"
+    database:
+        command: "--default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_unicode_ci"
+        image: mysql:8
+        environment:
+            - "MYSQL_ROOT_PASSWORD=123456"
+            - "MYSQL_DATABASE=database"
+        ports:
+            - "33069:3306"

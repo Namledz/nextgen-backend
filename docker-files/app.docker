@@ -1,0 +1,15 @@
+FROM node:14.4.0
+
+RUN apt-get update -y && \
+    apt-get install -y build-essential libfuse-dev libcurl4-openssl-dev libxml2-dev pkg-config libssl-dev mime-support automake libtool wget tar git unzip
+RUN apt-get install lsb-release -y  && apt-get install zip -y && apt-get install vim -y
+RUN apt-get install git nano -y && apt-get install unzip && apt-get install awscli -y
+
+RUN npm install pm2 -g
+RUN npm install -g db-migrate
+
+ADD https://btgenomics-s3-dev.s3-us-west-2.amazonaws.com/requirements/wkhtmltopdf /usr/bin/
+
+RUN chmod +x /usr/bin/wkhtmltopdf
+
+WORKDIR /var/www
