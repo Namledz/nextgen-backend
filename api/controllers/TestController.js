@@ -6,6 +6,8 @@
  */
 
 const cheerio = require('cheerio');
+const mongo = sails.config.MONGO;
+var mongodb= require('mongodb');
 
 module.exports = {
   
@@ -86,6 +88,22 @@ module.exports = {
             return res.json({ status: "error"}) 
         })
 	},
+
+    test: (req,res) => {
+        let db;
+        MongodbService.mongodbConnect()
+            .then(function (mdb) {
+                db = mdb;
+                let database = db.db('genomics');
+                database.collection('analysis_collection_1').find().toArray((err, results) => {
+                    if(err) throw err;
+                    console.log(results)
+                    results.forEach(e => {
+
+                    })
+                });
+            })
+    }
 
 };
 

@@ -21,6 +21,12 @@ module.exports.routes = {
 
   '/': { view: 'pages/homepage' },
   'GET /getQCVCF/:id': 'TestController.getQCVCF',
+  'POST /test': 'TestController.test',
+  'GET /analysis/:id': 'AnalysisController.getAnalysisName',
+  'GET /variant/:id': 'VariantController.variant',
+
+
+
 
 
   /***************************************************************************
