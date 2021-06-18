@@ -27,6 +27,18 @@ module.exports = {
             let $ = cheerio.load(html);
             // let style = `<style>` + $('style').html() + `</style>`;
             let style = `<style>
+            @media (max-width: 768px) {
+                .fix-display {
+                    display: inherit !important;
+                }
+                .fix-width {
+                    width: 100% !important;
+                }
+                center table {
+                    width: 100% !important;
+                }
+            }
+
             center {
                 margin-top: 20px;
                 margin-bottom: 20px;
@@ -43,8 +55,7 @@ module.exports = {
                 background:white;
                 border-radius:6px;
                 overflow:hidden;
-                max-width:800px; 
-                width:50%;
+                width:60%;
                 margin:0 auto;
                 position:relative;
                 border: 0 !important;
@@ -74,13 +85,20 @@ module.exports = {
               
               center table td,th &.l { text-align:right }
               center table td,th &.c { text-align:center }
-              center table td,th &.r { text-align:center }</style>`
+              center table td,th &.r { text-align:center }</style>`;
+
+            $('a[name="changesByType"]').find("center").css("width","50%");
+            $('a[name="changesByType"]').find("center").addClass("fix-width");
+            $('a[name="changesByType"]').find("hr").remove();
+            $('a[name="effectsFuncClass"]').find("table").css("width","100%");
+            $('a[name="effectsFuncClass"]').find("hr").remove();
             let variantsByType = $('a[name="changesByType"]').html();
             let effectsByFunctionalClass = $('a[name="effectsFuncClass"]').html();
+            let sumData = `<div class="fix-display" style="display: flex;">` + variantsByType + effectsByFunctionalClass + `</div><hr>`;
             let variations = `<center>` + $('a[name="effects"] p:nth-child(3)').html() + `</center><hr>`;
             let effectsByRegion = `<center><table border=0>` + $('a[name="effects"] table').find('table:eq(1)').html() + `</table></center><hr>`;
             let tstv = $('a[name="tstv"]').html();
-            let data = style + variantsByType + effectsByFunctionalClass + variations + effectsByRegion + tstv
+            let data = style + sumData + variations + effectsByRegion + tstv
             return res.json({ status: "success", html: data}) 
         })
         .catch(function(err) {
