@@ -20,7 +20,13 @@ module.exports.routes = {
   ***************************************************************************/
 
   '/': { view: 'pages/homepage' },
-  'GET /analysis/getFastqQC': 'FastqQCController.getFastqQC'
+  'GET /analysis/getFastqQC': 'FastqQCController.getFastqQC',
+  'POST /test': 'TestController.test',
+  'GET /analysis/:id': 'AnalysisController.getAnalysisName',
+  'GET /variant/:id': 'VariantController.variant',
+
+
+
 
 
   /***************************************************************************
