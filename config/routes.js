@@ -20,7 +20,12 @@ module.exports.routes = {
   ***************************************************************************/
 
   '/': { view: 'pages/homepage' },
-  'POST /test': 'TestController.test'
+  'POST /test': 'TestController.test',
+  'GET /analysis/:id': 'AnalysisController.getAnalysisName',
+  'GET /variant/:id': 'VariantController.variant',
+
+
+
 
 
   /***************************************************************************

@@ -1,9 +1,6 @@
 
 const mongo = sails.config.MONGO;
 var mongodb= require('mongodb');
-const MongodbService = require('../service/MongodbService');
-var MongoClient= mongodb.MongoClient;
-
 
 module.exports = {
     test: (req,res) => {
