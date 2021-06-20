@@ -9,6 +9,7 @@
     "@sailshq/lodash": "^3.10.3",
     "@sailshq/socket.io-redis": "^5.2.0",
     "cheerio": "^1.0.0-rc.10",
+    "crypto": "^1.0.1",
     "db-migrate": "^0.11.12",
     "db-migrate-mysql": "^2.1.2",
     "grunt": "1.0.4",

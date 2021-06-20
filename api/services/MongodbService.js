@@ -1,6 +1,5 @@
 /**
  * MongodbService
- * @author Tuan.Ngo
  */
  'use strict'
 

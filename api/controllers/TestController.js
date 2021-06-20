@@ -115,7 +115,6 @@ module.exports = {
                 let database = db.db('genomics');
                 database.collection('analysis_collection_1').find().toArray((err, results) => {
                     if(err) throw err;
-                    console.log(results)
                     results.forEach(e => {
 
                     })
