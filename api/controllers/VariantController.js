@@ -32,7 +32,7 @@ module.exports = {
 			.then(function (mdb) {
 				db = mdb;
 				let database = db.db('genomics');
-				let collection = database.collection(`analysis_collection_1`)
+				let collection = database.collection(`analysis_collection_${id}`)
 				let matchAnd = []
 				let limit = `
 					{
@@ -54,12 +54,11 @@ module.exports = {
 				if (filter.function) {
 					matchAnd.push({ codingEffect: filter.function })
 				}
-				if (filter.quality && filter.quality.type && filter.quality.value) {
-					if (filter.quality.type === '>=') {
-						matchAnd.push({ QUAL: { $gte: filter.quality.value } })
-					} else {
-						matchAnd.push({ QUAL: { $lte: filter.quality.value } })
-					}
+				if (filter.quality_greater) {
+					matchAnd.push({ QUAL: { $gte: filter.quality_greater } })	
+				}
+				if (filter.quality_lower) {
+					matchAnd.push({ QUAL: { $lte: filter.quality_lower } })
 				}
 				if (filter.gnomad && filter.gnomad.type && filter.gnomad.value) {
 					if (filter.gnomad.type === '>=') {
@@ -68,13 +67,14 @@ module.exports = {
 						matchAnd.push({ gnomAD_exome_ALL: { $lte: filter.gnomad.value } })
 					}
 				}
-				if (filter.readDepth && filter.readDepth.type && filter.readDepth.value) {
-					if (filter.readDepth.type === '>=') {
-						matchAnd.push({ readDepth: { $gte: filter.readDepth.value } })
-					} else {
-						matchAnd.push({ readDepth: { $lte: filter.readDepth.value } })
-					}
+
+				if (filter.depth_greater) {
+					matchAnd.push({ readDepth: { $gte: filter.depth_greater } })
 				}
+				if (filter.depth_lower) {
+					matchAnd.push({ readDepth: { $lte: filter.depth_lower } })
+				}
+
 
 				let match = ``
 
