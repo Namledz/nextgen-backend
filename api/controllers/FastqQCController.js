@@ -13,7 +13,7 @@ module.exports = {
         // let $ = cheerio.load('/var/www/data/sample1/snpEff_summary.html');
         // let data = $('#general_stats').html();
         // let data = $('a[name="changesByType"]').html();
-        fs.readFile('/var/www/data/sample1/multiqc_report.html', function (error, html) {
+        fs.readFile('/var/www/nextgen-backend/data/sample1/multiqc_report.html', function (error, html) {
             if (error) {
                 throw error;
             }
