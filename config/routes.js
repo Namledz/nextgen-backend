@@ -24,9 +24,11 @@ module.exports.routes = {
 	'GET /analysis/getFastqQC': 'FastqQCController.getFastqQC',
 	'POST /test': 'TestController.test',
 	'GET /analysis/:id': 'AnalysisController.getAnalysisName',
+	'GET /analysis-info/:id': 'AnalysisController.getAnalysisInfo',
 	'POST /variant/:id': 'VariantController.variant',
 	'GET /analysis/get-igv-info/:id' : 'VariantController.getIgvInfo',
-	'POST /analysis/list' : 'AnalysisController.list'
+	'POST /analysis/list' : 'AnalysisController.list',
+
 
 
 

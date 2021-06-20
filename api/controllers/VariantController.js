@@ -84,6 +84,9 @@ module.exports = {
 	},
 	getIgvInfo: (req, res) => {
 		let analysisId = req.params.id;
+		if (analysisId > 4) {
+			analysisId -= 4;
+		}
 		let folderName = `sample${analysisId}`
 		let user_ip = req.ip ? req.ip.replace(/::ffff:/g, "") : req.headers['x-real-ip'] ? req.headers['x-real-ip'] : undefined;
 		user_ip = '27.3.67.166';

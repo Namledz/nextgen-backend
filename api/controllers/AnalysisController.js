@@ -23,7 +23,13 @@ module.exports = {
 	},
 
 	getAnalysisInfo: (req, res) => {
-
+		let id = req.params.id;
+		let data = {
+			pipeline: id <= 4 ? 'Variant calling(FreeBayes)' : 'DNA-Seq QC, Alignment (BWA)',
+			project: 'Project 1',
+			samples: `EX ${id <= 4 ? id : (id - 4)}`
+		}	
+		return res.json({ status: 'success', data: data })
 	},
 
 	list: (req, res) => {
