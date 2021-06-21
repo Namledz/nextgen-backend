@@ -145,7 +145,7 @@ module.exports = {
 		}
 		let folderName = `sample${analysisId}`
 		let user_ip = req.ip ? req.ip.replace(/::ffff:/g, "") : req.headers['x-real-ip'] ? req.headers['x-real-ip'] : undefined;
-		user_ip = '27.3.67.166';
+		// user_ip = '27.3.67.166';
 
 		Promise.all([VariantService.getIgvLink(`${folderName}/realigned.bam`, user_ip), VariantService.getIgvLink(`${folderName}/realigned.bam.bai`, user_ip)])
 		.then(urls  => {
