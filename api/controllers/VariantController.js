@@ -83,7 +83,7 @@ module.exports = {
 					`{
 					"$project": {
 						"gene": "$gene",
-						"transcript_id": "$transcriptIds",
+						"transcript_id": "$transcript",
 						"position": "$inputPos",
 						"rsid": "$rsId",
 						"REF": "$REF",
@@ -124,9 +124,15 @@ module.exports = {
 				return Promise.all([collection.aggregate(pipeline, { allowDiskUse: true }).toArray(), collection.aggregate(pipeCount, { allowDiskUse: true }).toArray()])
 			})
 			.spread((data, count) => {
-				return res.json({ items: data, total: count[0].count })
+				if (db) {
+					db.close();
+				}
+				return res.json({ items: data, total: count[0] ? count[0].count : 0 })
 			})
 			.catch(error => {
+				if (db) {
+					db.close();
+				}
 				console.log(error);
 				return res.json({ items: [], total: 0 })
 			})
