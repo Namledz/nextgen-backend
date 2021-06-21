@@ -46,7 +46,7 @@ module.exports = {
 				`
 
 				if (filter.chrom) {
-					matchAnd.push({ chrom: filter.chrom })
+					matchAnd.push({ chrom: `${filter.chrom}` })
 				}
 				if (filter.gene) {
 					matchAnd.push({ gene: filter.gene })
@@ -85,6 +85,7 @@ module.exports = {
 						"gene": "$gene",
 						"transcript_id": "$transcript",
 						"position": "$inputPos",
+						"chrom": "$chrom",
 						"rsid": "$rsId",
 						"REF": "$REF",
 						"ALT": "$ALT",
