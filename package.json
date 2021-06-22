@@ -13,13 +13,15 @@
     "db-migrate": "^0.11.12",
     "db-migrate-mysql": "^2.1.2",
     "grunt": "1.0.4",
+    "moment": "^2.29.1",
     "mongodb": "^3.6.9",
     "sails": "^1.2.4",
     "sails-hook-grunt": "^4.0.0",
     "sails-hook-orm": "^2.1.1",
     "sails-hook-sockets": "^2.0.0",
     "sails-mongo": "^2.0.0",
-    "sails-mysql": "^1.0.1"
+    "sails-mysql": "^1.0.1",
+    "sqlstring": "^2.3.2"
   },
   "devDependencies": {
     "eslint": "5.16.0"

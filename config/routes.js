@@ -28,6 +28,7 @@ module.exports.routes = {
 	'POST /variant/:id': 'VariantController.variant',
 	'GET /analysis/get-igv-info/:id' : 'VariantController.getIgvInfo',
 	'POST /analysis/list' : 'AnalysisController.list',
+	'POST /workspaces/list' : 'WorkspacesController.listWorkspaces'
 
 
 
