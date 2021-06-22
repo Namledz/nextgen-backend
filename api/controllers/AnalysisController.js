@@ -44,27 +44,34 @@ module.exports = {
 		`
 
 		let queryStringFind = `
-		SELECT
-			a.id,
-			a.name,
-			a.createdAt,
-			a.updatedAt,
-			u.email,
-			u.role
-		FROM 
-			analysis as a
+			SELECT
+				a.id,
+				a.name,
+				a.createdAt,
+				a.updatedAt,
+				u.email,
+				u.role
+			FROM 
+				analysis as a
 		${queryStr}
 		`
 
-		Analysis.getDatastore().sendNativeQuery(queryStringFind)
-			.then(result => {
-				result.rows.forEach(e => {
+		let queryStringCount = `
+			SELECT COUNT (*) as total
+			FROM
+				analysis as a
+			${queryStr}
+		`
+
+		PromiseBlueBird.all([Analysis.getDatastore().sendNativeQuery(queryStringFind), Analysis.getDatastore().sendNativeQuery(queryStringCount)])
+			.spread((data,count) => {
+				data.rows.forEach(e => {
 					e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
 					e.updatedAt = `${moment(e.updatedAt).format('MM/DD/YYYY')}`
 				})
 				return res.json({
-					items: result.rows,
-					total: 4
+					items: data.rows,
+					total: count.rows[0].total
 				})
 			})
 		// let data = [

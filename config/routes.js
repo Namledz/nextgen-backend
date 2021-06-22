@@ -29,6 +29,9 @@ module.exports.routes = {
 	'GET /analysis/get-igv-info/:id' : 'VariantController.getIgvInfo',
 	'POST /analysis/list' : 'AnalysisController.list',
 
+	//SamplesController
+	'POST /samples/list' : 'SamplesController.list'
+
 
 
 
