@@ -7,40 +7,39 @@
 
 module.exports = {
 
-	// tableName: 'api_keys',
-	// primaryKey: 'id',
-	// attributes: {
-	// 	id: {
-	// 		type: 'number',
-	// 		unique: true,
-	// 		autoIncrement: true
-	// 	},
-	// 	user_uuid: {
-	// 		type: 'number',
-	// 	},
-	// 	name: {
-	// 		type: 'string',
-	// 	},
-	// 	data_type: {
-	// 		type: 'number'
-	// 	},
-	// 	control: {
-	// 		type: 'string'
-	// 	},
-	// 	genotype: {
-	// 		type: 'string'
-	// 	},
-	// 	createdAt: {
-	// 		type: 'ref',
-	// 		columnType: 'timestamp',
-	// 		autoCreatedAt: true
-	// 	},
-	// 	updatedAt: {
-	// 		type: 'ref',
-	// 		columnType: 'timestamp',
-	// 		autoUpdatedAt: true
-	// 	}
-	// },
-
+	tableName: 'api_keys',
+	primaryKey: 'id',
+	attributes: {
+		id: {
+			type: 'number',
+			unique: true,
+			autoIncrement: true
+		},
+		user_uuid: {
+			type: 'number',
+		},
+		name: {
+			type: 'string',
+		},
+		data_type: {
+			type: 'number'
+		},
+		control: {
+			type: 'string'
+		},
+		genotype: {
+			type: 'string'
+		},
+		createdAt: {
+			type: 'ref',
+			columnType: 'timestamp',
+			autoCreatedAt: true
+		},
+		updatedAt: {
+			type: 'ref',
+			columnType: 'timestamp',
+			autoUpdatedAt: true
+		}
+	},
 };
 
