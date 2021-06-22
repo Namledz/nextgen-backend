@@ -12,35 +12,74 @@
 module.exports = {
 	getAnalysisName: (req, res) => {
 		let id = req.param('id');
-		let name = `Analysis ${id}`;
-		let data = {
-			name: name,
-			type: ''
-		}
-		if (id <= 4) {
-			data.type = 'vcf'
-		} else {
-			data.type = 'fastq'
-		}
-		return res.json({ status: 'success', data })
+		// let data = {
+		// 	name: name,
+		// 	type: ''
+		// }
+		// if (id <= 4) {
+		// 	data.type = 'vcf'
+		// } else {
+		// 	data.type = 'fastq'
+		// }
+		Analysis.findOne({ id: id })
+			.then(a => {
+				let data = {
+					name: a.name,
+					type: a.p_type
+				}
+				return res.json({ status: 'success', data })
+			})
+			.catch(error => {
+				console.log("Error: ", error);
+				return res.json({ status: 'error' })
+			})
 	},
 
 	getAnalysisInfo: (req, res) => {
 		let id = req.params.id;
-		let data = {
-			pipeline: id <= 4 ? 'Variant calling(FreeBayes)' : 'DNA-Seq QC, Alignment (BWA)',
-			project: 'Project 1',
-			samples: `EX ${id <= 4 ? id : (id - 4)}`
-		}	
-		return res.json({ status: 'success', data: data })
+		// let data = {
+		// 	pipeline: id <= 4 ? 'Variant calling(FreeBayes)' : 'DNA-Seq QC, Alignment (BWA)',
+		// 	project: 'Project 1',
+		// 	samples: `EX ${id <= 4 ? id : (id - 4)}`
+		// }	
+
+		let queryStr = `
+			SELECT 
+				w.id as project_id,
+				w.name as project,
+				s.name as samples,
+				s.id as sample_id,
+				a.p_type
+			FROM 
+				analysis as a
+			LEFT JOIN workspace as w 
+			ON w.id = a.project_id
+			LEFT JOIN samples as s	
+			ON s.id = a.sample_id
+			WHERE 
+				a.id = ${id}
+		`
+		Analysis.getDatastore().sendNativeQuery(queryStr)
+			.then(a => {
+				let d = a.rows[0];
+				if (d.p_type == 'vcf') {
+					d.pipeline = 'Variant calling(FreeBayes)';
+				} else {
+					d.pipeline = 'DNA-Seq QC, Alignment (BWA)';
+				}
+				return res.json({ status: 'success', data: d })
+			})
+			.catch(error => {
+				return res.json({ status: 'error', data: {} })
+			})
 	},
 
 	list: (req, res) => {
-
-
 		let queryStr = `
 			LEFT JOIN users as u
 			ON a.user_id = u.id
+			LEFT JOIN samples as s
+			ON s.id = a.sample_id
 		`
 
 		let queryStringFind = `
@@ -50,7 +89,8 @@ module.exports = {
 				a.createdAt,
 				a.updatedAt,
 				u.email,
-				u.role
+				u.role,
+				s.name as sample_name
 			FROM 
 				analysis as a
 		${queryStr}
@@ -69,6 +109,13 @@ module.exports = {
 					e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
 					e.updatedAt = `${moment(e.updatedAt).format('MM/DD/YYYY')}`
 				})
+				return res.json({
+					items: data.rows,
+					total: count.rows[0].total
+				})
+			})
+			.catch(error => {
+				console.log("Error ", error)
 				return res.json({
 					items: data.rows,
 					total: count.rows[0].total

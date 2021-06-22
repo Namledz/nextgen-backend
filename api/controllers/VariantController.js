@@ -143,15 +143,15 @@ module.exports = {
 	},
 	getIgvInfo: (req, res) => {
 		let analysisId = req.params.id;
-		if (analysisId > 4) {
-			analysisId -= 4;
-		}
-		let folderName = `sample${analysisId}`
-		// let user_ip = req.ip ? req.ip.replace(/::ffff:/g, "") : req.headers['x-real-ip'] ? req.headers['x-real-ip'] : undefined;
-		let user_ip = req.headers['x-real-ip'] ? req.headers['x-real-ip'].replace(/::ffff:/g, "") : req.ip ? req.ip.replace(/::ffff:/g, "") : undefined;	
-		// user_ip = '27.3.67.166';
+		Analysis.findOne({ id: analysisId })
+			.then(analysis => {
+				let folderName = analysis.igv_local_path;
+				// let user_ip = req.ip ? req.ip.replace(/::ffff:/g, "") : req.headers['x-real-ip'] ? req.headers['x-real-ip'] : undefined;
+				let user_ip = req.headers['x-real-ip'] ? req.headers['x-real-ip'].replace(/::ffff:/g, "") : req.ip ? req.ip.replace(/::ffff:/g, "") : undefined;
+				// user_ip = '27.3.67.166';
 
-		Promise.all([VariantService.getIgvLink(`${folderName}/realigned.bam`, user_ip), VariantService.getIgvLink(`${folderName}/realigned.bam.bai`, user_ip)])
+				return Promise.all([VariantService.getIgvLink(`${folderName}/realigned.bam`, user_ip), VariantService.getIgvLink(`${folderName}/realigned.bam.bai`, user_ip)])
+			})
 			.then(urls => {
 				let bamUrl = urls[0]
 				let indexBamUrl = urls[1];

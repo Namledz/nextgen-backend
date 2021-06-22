@@ -29,6 +29,19 @@
 		genotype: {
 			type: 'string',
 		},
+		igv_local_path: {
+			type: 'string',
+			allowNull: true
+		},
+		sample_id: {
+			type: 'number'
+		},
+		project_id: {
+			type: 'number'
+		},
+		p_type: {
+			type: 'string'
+		},
 		createdAt: {
 			type: 'ref',
 			columnType: 'timestamp',
