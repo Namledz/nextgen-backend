@@ -46,35 +46,39 @@ module.exports = {
 				`
 
 				if (filter.chrom) {
-					matchAnd.push({ chrom: `${filter.chrom}` })
+					matchAnd.push({ chrom: { "$in": filter.chrom } })
 				}
 				if (filter.gene) {
-					matchAnd.push({ gene: filter.gene })
+					matchAnd.push({ gene: { "$in": filter.gene } })
 				}
+				if (filter.annotation) {
+					matchAnd.push({ codingEffect: { "$in": filter.annotation } })
+				}
+				if (filter.classification) {
+					matchAnd.push({ CLINSIG_FINAL: { "$in": filter.classification } })
+				}
+				if (filter.alleleFraction) {
+					matchAnd.push({ alleleFrequency: filter.alleleFraction })
+				}
+				if (filter.gnomADfrom) {
+					matchAnd.push({ gnomAD_exome_ALL: { $gte: filter.gnomADfrom } })
+				}
+				if (filter.gnomADto) {
+					matchAnd.push({ gnomAD_exome_ALL: { $gte: filter.gnomADto } })
+				}
+				if (filter.depth_greater) {
+					matchAnd.push({ readDepth: { $gte: filter.depth_greater } })
+				}
+
 				if (filter.function) {
 					matchAnd.push({ codingEffect: filter.function })
 				}
 				if (filter.quality_greater) {
-					matchAnd.push({ QUAL: { $gte: filter.quality_greater } })	
+					matchAnd.push({ QUAL: { $gte: filter.quality_greater } })
 				}
 				if (filter.quality_lower) {
 					matchAnd.push({ QUAL: { $lte: filter.quality_lower } })
 				}
-				if (filter.gnomad && filter.gnomad.type && filter.gnomad.value) {
-					if (filter.gnomad.type === '>=') {
-						matchAnd.push({ gnomAD_exome_ALL: { $gte: filter.gnomad.value } })
-					} else {
-						matchAnd.push({ gnomAD_exome_ALL: { $lte: filter.gnomad.value } })
-					}
-				}
-
-				if (filter.depth_greater) {
-					matchAnd.push({ readDepth: { $gte: filter.depth_greater } })
-				}
-				if (filter.depth_lower) {
-					matchAnd.push({ readDepth: { $lte: filter.depth_lower } })
-				}
-
 
 				let match = ``
 
@@ -121,7 +125,6 @@ module.exports = {
 
 				//pipecount
 				pipeCount.push({ $group: { _id: null, count: { $sum: 1 } } })
-
 				return Promise.all([collection.aggregate(pipeline, { allowDiskUse: true }).toArray(), collection.aggregate(pipeCount, { allowDiskUse: true }).toArray()])
 			})
 			.spread((data, count) => {
@@ -149,7 +152,7 @@ module.exports = {
 		// user_ip = '27.3.67.166';
 
 		Promise.all([VariantService.getIgvLink(`${folderName}/realigned.bam`, user_ip), VariantService.getIgvLink(`${folderName}/realigned.bam.bai`, user_ip)])
-		.then(urls  => {
+			.then(urls => {
 				let bamUrl = urls[0]
 				let indexBamUrl = urls[1];
 				return res.json({ status: 'success', data: { bamUrl: bamUrl, indexBamUrl: indexBamUrl } })
