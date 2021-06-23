@@ -15,19 +15,23 @@
 			autoIncrement: true
 		},
         name: {
-            type: 'string'
+            type: 'string',
+			allowNull: true
         },
 		user_id: {
 			type: 'number',
 		},
 		data_type: {
 			type: 'number',
+			allowNull: true
 		},
 		control: {
 			type: 'string',
+			allowNull: true
 		},
 		genotype: {
 			type: 'string',
+			allowNull: true
 		},
 		igv_local_path: {
 			type: 'string',
@@ -40,7 +44,21 @@
 			type: 'number'
 		},
 		p_type: {
-			type: 'string'
+			type: 'string',
+			allowNull: true
+		},
+		analyzed: {
+			type: 'ref',
+			columnType: 'timestamp',
+		},
+		variants: {
+			type: 'number'
+		},
+		size: {
+			type: 'number'
+		},
+		status: {
+			type: 'number'
 		},
 		createdAt: {
 			type: 'ref',
@@ -53,5 +71,9 @@
 			autoUpdatedAt: true
 		}
 	},
+
+	statuses: {
+		ANALYZED: 2
+	}
 };
 

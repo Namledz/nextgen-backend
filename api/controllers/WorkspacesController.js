@@ -38,10 +38,15 @@ module.exports = {
                 workspace.name, 
                 workspace.last_modified as lastModified, 
                 workspace.user_created_id as createdBy, 
-                workspace.number, 
-                workspace.pipeline
+                t.total as number,
+				u.email as createdBy,
+                workspace.pipeline	
             FROM
                 workspace
+			LEFT JOIN
+				(SELECT COUNT(a.project_id) as total, a.project_id FROM analysis as a GROUP BY a.project_id) as t
+			ON workspace.id = t.project_id
+			LEFT JOIN users as u ON u.id = workspace.user_created_id
 			${searchFilter}`
 
         let queryStringCount = queryString
@@ -60,7 +65,6 @@ module.exports = {
 			.then((data) => {
                 data.rows.forEach(e => {
                     e.lastModified = e.lastModified ? `${moment(e.lastModified).format('MM/DD/YYYY')}` :  '';
-					e.createdBy = 1 ? "qnguyen@ymal.com" : "Unknown"
 				});
 				return res.json({ items: data.rows, total: allData.length })
 			})
@@ -68,7 +72,18 @@ module.exports = {
                 console.log(error);
 				return res.json({ status: 'error' })
 			})
-    }
+    },
+
+	getProjectName: (req, res) => {
+		let id = req.params.id;
+		Workspaces.findOne({ id: id }).then(w => {
+			return res.json({ status: 'success', data: w.name })
+		})
+		.catch(error => {
+			console.log(error);
+			return res.json({ status: 'error' })
+		})
+	}
 
 };
 
