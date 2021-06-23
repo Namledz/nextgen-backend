@@ -24,5 +24,19 @@ module.exports = {
 		// console.log(result)
 		return result;
 
+	},
+
+	sortVariants: (col) => {
+		let t = {
+			"id": "_id",
+			"gene": "gene",
+			"transcript_id": "transcript",
+			"function": "codingEffect",
+			"location": "varLocation",
+			"coverage": "coverage",
+			"gnomad": "gnomAD_exome_ALL",
+			"classification": "CLINSIG_PRIORITY"
+		}
+	return t[col];
 	}
 }

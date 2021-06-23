@@ -20,7 +20,7 @@ module.exports = {
 		let grouping = req.body.grouping
 		let sorting = req.body.sorting
 		let column = sorting.column
-		let sortOrder = sorting.direction
+		let sortOrder = sorting.direction == 'asc'? 1 : -1;
 		let paginator = req.body.paginator
 		let pageSize = paginator.pageSize ? paginator.pageSize : 10
 		let page = paginator.page
@@ -86,6 +86,7 @@ module.exports = {
 				let project =
 					`{
 					"$project": {
+						"id": "$_id",
 						"gene": "$gene",
 						"transcript_id": "$transcript",
 						"position": "$inputPos",
@@ -100,9 +101,23 @@ module.exports = {
 						"coverage": "$coverage",
 						"gnomad": "$gnomAD_exome_ALL",
 						"cosmicID": "$cosmicIds",
-						"classification": "$CLINSIG_FINAL"
+						"classification": "$CLINSIG_FINAL",
+						"clinvar": "$Clinvar_VARIANT_ID",
+						"gnomAD_AFR": "$gnomAD_exome_AFR",
+						"gnomAD_AMR": "$gnomAD_exome_AMR"
 					}
 				}`
+
+				let sort;
+				if (VariantService.sortVariants(column)) {
+					sort = `
+					{
+						"$sort": {
+							"${VariantService.sortVariants(column)}" : ${sortOrder}
+						}
+					}
+				`
+				}
 
 				let pipeline = []
 				let pipeCount = []
@@ -119,10 +134,13 @@ module.exports = {
 				}
 
 				//pipeline
+				if (sort) {
+					pipeline.push(JSON.parse(sort))
+				}
 				pipeline.push(JSON.parse(project))
 				pipeline.push(JSON.parse(offset))
 				pipeline.push(JSON.parse(limit))
-
+				console.log(pipeline);
 				//pipecount
 				pipeCount.push({ $group: { _id: null, count: { $sum: 1 } } })
 				return Promise.all([collection.aggregate(pipeline, { allowDiskUse: true }).toArray(), collection.aggregate(pipeCount, { allowDiskUse: true }).toArray()])
