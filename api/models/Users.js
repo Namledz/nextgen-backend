@@ -15,26 +15,33 @@
 			autoIncrement: true
 		},
 		username: {
-			type: 'string'
+			type: 'string',
+			allowNull: true
 		},
 		first_name: {
-			type: 'string'
+			type: 'string',
+			allowNull: true
 		},
 		last_name: {
-			type: 'string'
+			type: 'string',
+			allowNull: true
 		},
 		email: {
 			type: 'string',
+			allowNull: true
 		},
 		password: {
 			type: 'string',
-			maxLength: 255
+			maxLength: 255,
+			allowNull: true
 		},
 		role: {
 			type: 'number',
+			allowNull: true
 		},
 		status: {
 			type: 'number',
+			allowNull: true
 		},
 		createdAt: {
 			type: 'ref',

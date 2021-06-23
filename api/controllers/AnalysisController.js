@@ -12,15 +12,6 @@
 module.exports = {
 	getAnalysisName: (req, res) => {
 		let id = req.param('id');
-		// let data = {
-		// 	name: name,
-		// 	type: ''
-		// }
-		// if (id <= 4) {
-		// 	data.type = 'vcf'
-		// } else {
-		// 	data.type = 'fastq'
-		// }
 		Analysis.findOne({ id: id })
 			.then(a => {
 				let data = {
@@ -37,11 +28,6 @@ module.exports = {
 
 	getAnalysisInfo: (req, res) => {
 		let id = req.params.id;
-		// let data = {
-		// 	pipeline: id <= 4 ? 'Variant calling(FreeBayes)' : 'DNA-Seq QC, Alignment (BWA)',
-		// 	project: 'Project 1',
-		// 	samples: `EX ${id <= 4 ? id : (id - 4)}`
-		// }	
 
 		let queryStr = `
 			SELECT 
@@ -75,11 +61,15 @@ module.exports = {
 	},
 
 	list: (req, res) => {
+		let id = req.params.id;
 		let queryStr = `
 			LEFT JOIN users as u
 			ON a.user_id = u.id
 			LEFT JOIN samples as s
 			ON s.id = a.sample_id
+			LEFT JOIN workspace as w
+			ON a.project_id = w.id
+			WHERE a.project_id = ${id}
 		`
 
 		let queryStringFind = `
@@ -90,7 +80,13 @@ module.exports = {
 				a.updatedAt,
 				u.email,
 				u.role,
-				s.name as sample_name
+				s.name as sample_name,
+				w.name as project_name,
+				w.id as project_id,
+				a.analyzed,
+				a.variants,
+				a.size,
+				a.status
 			FROM 
 				analysis as a
 		${queryStr}
@@ -108,6 +104,8 @@ module.exports = {
 				data.rows.forEach(e => {
 					e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
 					e.updatedAt = `${moment(e.updatedAt).format('MM/DD/YYYY')}`
+					e.analyzed = `${moment(e.analyzed).format('MM/DD/YYYY')}`
+					e.status = e.status == 2 ? 'Analyzed' : ''
 				})
 				return res.json({
 					items: data.rows,
@@ -117,8 +115,8 @@ module.exports = {
 			.catch(error => {
 				console.log("Error ", error)
 				return res.json({
-					items: data.rows,
-					total: count.rows[0].total
+					items: [],
+					total: 0
 				})
 			})
 		// let data = [

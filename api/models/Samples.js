@@ -20,15 +20,18 @@ module.exports = {
 		},
 		name: {
 			type: 'string',
+			allowNull: true
 		},
 		data_type: {
 			type: 'number'
 		},
 		control: {
-			type: 'string'
+			type: 'string',
+			allowNull: true
 		},
 		genotype: {
-			type: 'string'
+			type: 'string',
+			allowNull: true
 		},
 		createdAt: {
 			type: 'ref',

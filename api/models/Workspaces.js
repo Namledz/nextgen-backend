@@ -17,19 +17,22 @@ module.exports = {
 		},
 		name: {
 			type: 'string',
+			allowNull: true	
 		},
-    last_modified: {
+		last_modified: {
 			type: 'ref',
 			columnType: 'timestamp',
-    },
+		},
 		user_created_id: {
 			type: 'number',
 		},
 		number: {
-			type: 'number'
+			type: 'number',
+			allowNull: true
 		},
 		pipeline: {
-			type: 'string'
+			type: 'string',
+			allowNull: true
 		},
 		createdAt: {
 			type: 'ref',
