@@ -64,10 +64,13 @@ module.exports = {
 					matchAnd.push({ gnomAD_exome_ALL: { $gte: filter.gnomADfrom } })
 				}
 				if (filter.gnomADto) {
-					matchAnd.push({ gnomAD_exome_ALL: { $gte: filter.gnomADto } })
+					matchAnd.push({ gnomAD_exome_ALL: { $lte: filter.gnomADto } })
 				}
 				if (filter.depth_greater) {
 					matchAnd.push({ readDepth: { $gte: filter.depth_greater } })
+				}
+				if (filter.depth_lower) {
+					matchAnd.push({ readDepth: { $lte: filter.depth_lower } })
 				}
 
 				if (filter.function) {
