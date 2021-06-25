@@ -1,0 +1,149 @@
+<div class="report_header" >
+    <table style=" width: 100%; max-width: 100%; vertical-align: top;">
+        <tbody>
+            <tr>
+                <td style='text-align: center; width: 30%;'>
+                    <div style="background-image: url(../../../../../../assets/varigene_v3.png); background-repeat: no-repeat; background-size: cover; background-position: center; height: 100px;">
+                    </div>
+                </td>
+                <td style='text-align: center; width: 70%;'>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="margin: 15px auto; height: 20px;"> </div>
+</div>
+
+<div class="result_content">
+    <style>
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .table-row tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+        
+        .row {
+            display: flex;
+            display: -webkit-box;
+            flex-wrap: wrap;
+            margin-right: 0px !important;
+            margin-left: 0px !important;
+            justify-content: left;
+        }
+
+        .test-description {
+            color: #fff;
+            background-color: #37395d;
+            padding: 20px;
+        }
+
+        .test-description-text {
+            font-style: italic;
+            font-size: 10px;
+        }
+
+        #page-number {
+            text-align: right;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+        .report-table td {
+            border-left: 1px solid #ddd;
+            vertical-align: top;
+            border-bottom: 1px solid #ddd;
+        }
+            </style>
+    <div class="group-content">
+        <table cellspacing=0 cellpadding=0 style="width: 100%; max-width: 100%; border-collapse: separate; border-spacing: 0 20px;">
+            <tr>
+                <td style="width: 50%;">
+                    <h2 style="font-weight: 400; font-family:Arial, Helvetica, sans-serif"><img style="display: inline-block; width: 30px; " src="http://mycovscan-s3-prod.s3-us-west-2.amazonaws.com/public/user.PNG" alt="user">Patient Information</h2>
+                    <table class="table-row" cellspacing=0 cellpadding=0 style="width: 100%; max-width: 100%; border: none">
+                        <tr>
+                            <td style="padding: 6px; width: 40%; ">Patient no</td>
+                            <td style="padding: 6px; font-weight: 600; width: 60%; text-align: left "><%= patientInfor.patientNo %></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; width: 40%; ">Patient Name</td>
+                            <td style="padding: 6px; font-weight: 600; width: 60%; text-align: left "><%= patientInfor.patientName %></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; width: 40%; ">Date of Birth</td>
+                            <td style="padding: 6px; font-weight: 600; width: 60%; text-align: left "><%= patientInfor.dob %></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; width: 40%; ">Gender</td>
+                            <td style="padding: 6px; font-weight: 600; width: 60%; text-align: left "><%= patientInfor.gender %></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; width: 40%; ">Enthicity</td>
+                            <td style="padding: 6px; font-weight: 600; width: 60%; text-align: left "><%= patientInfor.ethnicity %></td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="width: 50%; vertical-align: initial; padding-left: 20px;">
+                    <h2 style="font-weight: 400; font-family:Arial, Helvetica, sans-serif"><img style="display: inline-block; width: 30px; " src="http://mycovscan-s3-prod.s3-us-west-2.amazonaws.com/public/lab.PNG" alt="lab"> Laboratary</h2>
+                    <table class="table-row" cellspacing=0 cellpadding=0 style="width: 100%; max-width: 100%; border: none">
+                        <tr>
+                            <td style="padding: 6px; width: 40%; ">Physician Name</td>
+                            <td style="padding: 6px; font-weight: 600; width: 60%; text-align: left "><%= labInfor.labName %></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; width: 40%; ">Specimen</td>
+                            <td style="padding: 6px; font-weight: 600; width: 60%; text-align: left "><%= labInfor.specimen %></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; width: 40%; ">Received Date</td>
+                            <td style="padding: 6px; font-weight: 600; width: 60%; text-align: left "><%= labInfor.receivedDate %></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; width: 40%; ">Prepared by</td>
+                            <td style="padding: 6px; font-weight: 600; width: 60%; text-align: left "><%= labInfor.preparedBy %></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; width: 40%; ">Report Date</td>
+                            <td style="padding: 6px; font-weight: 600; width: 60%; text-align: left "><%= labInfor.reportedDate %></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style = "display:block; clear:both; page-break-after:always;"></div>
+    <div class="group-content" style="padding-top: 5%">
+        <table class="report-table" cellspacing=0 cellpadding=0 style="width: 100%; max-width: 100%; border: 1px solid #ddd">
+            <h2 style="font-weight: 400; font-family:Arial, Helvetica, sans-serif"><img style="display: inline-block; width: 30px; " src="http://mycovscan-s3-prod.s3-us-west-2.amazonaws.com/public/chart.PNG" alt="user">Result Details</h2>
+            <tr style="background-color: #f9fafc; text-transform: uppercase;">
+                <th style="padding: 6px; text-align: center;">Gene</th>
+                <th style="padding: 6px; text-align: center;">Transcript</th>
+                <th style="padding: 6px; text-align: center;">cDNA</th>
+                <th style="padding: 6px; text-align: center;">Coverage</th>
+                <th style="padding: 6px; text-align: center;">gAD_ALL<br>gAD_AFR<br>gAD_AMR</th>
+                <th style="padding: 6px; text-align: center;">Inheritance</th>
+                <th style="padding: 6px; text-align: center;">Classification</th>
+            </tr>
+            <% for(let i in variantSelected) { %>
+            <tr>
+                <td style="padding: 6px; text-align: center;"><div><%= variantSelected[i].gene %></div></td>
+                <td style="padding: 6px; text-align: center;"><div><%= variantSelected[i].transcript_id %></div></td>
+                <td style="padding: 6px; text-align: center;"><div><%= variantSelected[i].cnomen %></div></td>
+                <td style="padding: 6px; text-align: center;"><div><%= variantSelected[i].coverage %></div></td>
+                <td style="padding: 6px; text-align: center;">
+                    <div>
+                    <%= variantSelected[i].gnomad %><br>
+                    <%= variantSelected[i].gnomAD_AFR %><br>
+                    <%= variantSelected[i].gnomAD_AMR %></div>
+                </td>
+                <td style="padding: 6px; text-align: center;"><div><%= variantSelected[i].inheritance %></div></td>
+                <td style="padding: 6px; text-align: center;"><div><%= variantSelected[i].classification %></div></td>
+            </tr>
+            <% } %>
+        </table>
+    </div>
+</div>

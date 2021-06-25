@@ -24,12 +24,18 @@ module.exports.routes = {
 	'GET /analysis/getFastqQC': 'FastqQCController.getFastqQC',
 	'POST /test': 'TestController.test',
 	'GET /analysis/:id': 'AnalysisController.getAnalysisName',
+	'POST /variant/:id/select-variant-to-report': 'VariantController.selectVariantToReport',
 	'GET /analysis-info/:id': 'AnalysisController.getAnalysisInfo',
 	'POST /variant/:id': 'VariantController.variant',
 	'GET /analysis/get-igv-info/:id': 'VariantController.getIgvInfo',
 	'POST /analysis/list/:id': 'AnalysisController.list',
 	'POST /workspaces/list': 'WorkspacesController.listWorkspaces',
 	'POST /getGeneDetail': 'VariantController.getGeneDetail',
+	'POST /getSeletedVariants/:id': 'VariantController.getSeletedVariants',
+	'POST /getSeletedVariants/:id/createReport': 'VariantController.createReport',
+	'GET /analysis/get-igv-info/:id' : 'VariantController.getIgvInfo',
+	'POST /analysis/list/:id' : 'AnalysisController.list',
+	'POST /workspaces/list' : 'WorkspacesController.listWorkspaces',
 
 	//SamplesController
 	'POST /samples/list': 'SamplesController.list',

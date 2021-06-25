@@ -11,6 +11,8 @@ const mongo = sails.config.MONGO;
 var mongodb = require('mongodb');
 var crypto = require("crypto");
 const numeral = require('numeral')
+const moment = require('moment');
+
 
 module.exports = {
 	variant: (req, res) => {
@@ -31,7 +33,7 @@ module.exports = {
 		MongodbService.mongodbConnect()
 			.then(function (mdb) {
 				db = mdb;
-				let database = db.db('genomics');
+				let database = db.db('database');
 				let collection = database.collection(`analysis_collection_${id}`)
 				let matchAnd = []
 				let limit = `
@@ -267,6 +269,153 @@ module.exports = {
 			.catch(err => {
 				console.log(error);
 				return res.json({ status: 'error' })
+			})
+	},
+	selectVariantToReport: (req, res) => {
+		let id = req.params.id;
+		let variantsSelected = req.body.data;
+
+		Analysis.findOne(id)
+			.then((data) => {
+				let variantToReport = data.variants_to_report ? JSON.parse(data.variants_to_report) : [];
+				let newVariantToReport = [];
+				for (let i in variantsSelected) {
+					let check = true;
+					let chrom_pos_ref_alt = variantsSelected[i].chrom + "_" + variantsSelected[i].pos + "_" + variantsSelected[i].ref + "_" + variantsSelected[i].alt + variantsSelected[i].gene;
+					for (let j in variantToReport) {
+						let chrom_pos_ref_alt_analysis = variantToReport[j].chrom + "_" + variantToReport[j].pos + "_" + variantToReport[j].ref + "_" + variantToReport[j].alt + variantToReport[j].gene;
+
+						if (chrom_pos_ref_alt == chrom_pos_ref_alt_analysis) {
+							check = false;
+							break;
+						}
+					}
+					if (check) {
+						newVariantToReport.push(variantsSelected[i]);
+					}
+				}
+				let arr = newVariantToReport.concat(variantToReport);
+				return Analysis.update({ id: id }, { variants_to_report: JSON.stringify(arr) }).fetch()
+			})
+			.then((result) => {
+				return res.json({ status: 'success', message: "Added to Report" })
+			})
+			.catch((err) => {
+				console.log(err);
+				return res.json({ status: 'error', message: "Unkown error" })
+			})
+
+	},
+
+	getSeletedVariants: (req, res) => {
+		let id = req.params.id;
+		let chrom_pos_ref_alt_arr = [];
+		let db;
+		Analysis.findOne(id)
+			.then((data) => {
+				let variantToReport = data.variants_to_report ? JSON.parse(data.variants_to_report) : [];
+				for (let i in variantToReport) {
+					let chrom_pos_ref_alt_analysis = variantToReport[i].chrom + "_" + variantToReport[i].pos + "_" + variantToReport[i].ref + "_" + variantToReport[i].alt + "_" + variantToReport[i].gene;
+					chrom_pos_ref_alt_arr.push(chrom_pos_ref_alt_analysis);
+				}
+
+				return new Promise((resolve, reject) => {
+					MongodbService.mongodbConnect()
+						.then(function (mdb) {
+							db = mdb;
+							let database = db.db('database');
+							let collection = database.collection(`analysis_collection_${id}`)
+
+							let project =
+								`{
+						"$project": {
+							"_id": "$_id",
+							"id": "$chrom_pos_ref_alt_gene",
+							"gene": "$gene",
+							"transcript_id": "$transcript",
+							"position": "$inputPos",
+							"chrom": "$chrom",
+							"rsid": "$rsId",
+							"REF": "$REF",
+							"ALT": "$ALT",
+							"cnomen": "$cNomen",
+							"pnomen": "$pnomen",
+							"function": "$codingEffect",
+							"location": "$varLocation",
+							"coverage": "$coverage",
+							"gnomad": "$gnomAD_exome_ALL",
+							"cosmicID": "$cosmicIds",
+							"classification": "$CLINSIG_FINAL",
+							"clinvar": "$Clinvar_VARIANT_ID",
+							"gnomAD_AFR": "$gnomAD_exome_AFR",
+							"gnomAD_AMR": "$gnomAD_exome_AMR",
+							"inheritance": "$inheritance"
+						}
+						}`
+
+							let pipeline = [];
+							let match = ``;
+							match = {
+								$match: {
+									chrom_pos_ref_alt_gene: { "$in": chrom_pos_ref_alt_arr }
+								}
+							}
+							pipeline.push(match)
+							pipeline.push(JSON.parse(project))
+
+							resolve(collection.aggregate(pipeline, { allowDiskUse: true }).toArray())
+						})
+				})
+			})
+			.then((data) => {
+				if (db) {
+					db.close();
+				}
+				return res.json({ items: data, total: 0 })
+			})
+			.catch((err) => {
+				if (db) {
+					db.close();
+				}
+				console.log(err);
+				return res.json({ status: 'error', message: "Unkown error" })
+			})
+	},
+
+	createReport: (req, res) => {
+		let id = req.params.id;
+		let variantSelected = req.body.selectedFilter;
+		let templatePath = `pages/templates/report/report`;
+		let patientInfor = {
+			patientNo: "Undefinded",
+			patientName: "John Cameroon",
+			dob: moment().format('MM/DD/YYYY'),
+			gender: "Male",
+			ethnicity: "Asian"
+		}
+
+		let labInfor = {
+			labName: "None",
+			specimen: "Blood",
+			receivedDate: moment().format('MM/DD/YYYY'),
+			preparedBy: "None",
+			reportedDate: moment().format('MM/DD/YYYY')
+		}
+
+		return new Promise(function (resolve, reject) {
+			sails.renderView(templatePath, { patientInfor: patientInfor, variantSelected: variantSelected, labInfor: labInfor, layout: '/layouts/default_layout' }, function (err, view) {
+				if (err) {
+					return reject(err)
+				}
+				return resolve(view)
+			})
+		})
+			.then((html) => {
+				return res.json({ status: "success", html: html, message: "Created report successfully" })
+			})
+			.catch((err) => {
+				console.log(err);
+				return res.json({ status: 'error', message: "Unkown error" })
 			})
 	}
 };
