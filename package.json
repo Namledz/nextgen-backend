@@ -16,6 +16,7 @@
     "js-combinatorics": "^0.5.2",
     "moment": "^2.29.1",
     "mongodb": "^3.6.9",
+    "numeral": "^2.0.6",
     "sails": "^1.2.4",
     "sails-hook-grunt": "^4.0.0",
     "sails-hook-orm": "^2.1.1",

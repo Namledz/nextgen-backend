@@ -10,7 +10,7 @@
 const mongo = sails.config.MONGO;
 var mongodb = require('mongodb');
 var crypto = require("crypto");
-
+const numeral = require('numeral')
 
 module.exports = {
 	variant: (req, res) => {
@@ -20,7 +20,7 @@ module.exports = {
 		let grouping = req.body.grouping
 		let sorting = req.body.sorting
 		let column = sorting.column
-		let sortOrder = sorting.direction == 'asc'? 1 : -1;
+		let sortOrder = sorting.direction == 'asc' ? 1 : -1;
 		let paginator = req.body.paginator
 		let pageSize = paginator.pageSize ? paginator.pageSize : 10
 		let page = paginator.page
@@ -98,7 +98,7 @@ module.exports = {
 						"REF": "$REF",
 						"ALT": "$ALT",
 						"cnomen": "$cNomen",
-						"pnomen": "$pnomen",
+						"pnomen": "$pNomen",
 						"function": "$codingEffect",
 						"location": "$varLocation",
 						"coverage": "$coverage",
@@ -107,7 +107,51 @@ module.exports = {
 						"classification": "$CLINSIG_FINAL",
 						"clinvar": "$Clinvar_VARIANT_ID",
 						"gnomAD_AFR": "$gnomAD_exome_AFR",
-						"gnomAD_AMR": "$gnomAD_exome_AMR"
+						"gnomAD_AMR": "$gnomAD_exome_AMR",
+						"Consequence": "$Consequence",
+						"EXON": "$EXON",
+						"INTRON": "$INTRON",
+						"DOMAINS": "$DOMAINS",
+						"gnomAD_genome_AMR": "$gnomAD_genome_AMR",
+						"gnomADe_AMR": "$gnomADe_AMR",
+						"CLINSIG": "$CLINSIG",
+						"NEW_CLINSIG": "$NEW_CLINSIG",
+						"CLNACC": "$CLNACC",
+						"SOMATIC": "$SOMATIC",
+						"cosmics": "$cosmics",
+						"SIFT_score": "$SIFT_score",
+						"Polyphen2_HDIV_score": "$Polyphen2_HDIV_score",
+						"CADD_PHRED": "$CADD_PHRED",
+						"PUBMED": "$PUBMED",
+						"gold_stars": "$gold_stars",
+						"review_status": "$review_status",
+						"Clinvar_VARIANT_ID": "$Clinvar_VARIANT_ID",
+						"gene_omim": "$gene_omim",
+						"GeneSplicer": "$GeneSplicer",
+						"gnomADe_AFR": "$gnomADe_AFR",
+						"gnomAD_genome_AFR": "$gnomAD_genome_AFR",
+						"1000g_AFR_AF": "$1000g_AFR_AF",
+						"1000g_AMR_AF": "$1000g_AMR_AF",
+						"gnomADe_EAS": "$gnomADe_EAS",
+						"gnomAD_genome_EAS": "$gnomAD_genome_EAS",
+						"gnomADe_SAS": "$gnomADe_SAS",
+						"1000g_SAS_AF": "$1000g_SAS_AF",
+						"gnomADe_ASJ": "$gnomADe_ASJ",
+						"gnomAD_genome_ASJ": "$gnomAD_genome_ASJ",
+						"gnomADe_FIN": "$gnomADe_FIN",
+						"gnomAD_genome_FIN": "$gnomAD_genome_FIN",
+						"1000g_EUR_AF": "$1000g_EUR_AF",
+						"gnomADe_NFE": "$gnomADe_NFE",
+						"gnomAD_genome_NFE": "$gnomAD_genome_NFE",
+						"gnomADe_OTH": "$gnomADe_OTH",
+						"gnomADe_ALL": "$gnomADe_ALL",
+						"gnomAD_genome_ALL": "$gnomAD_genome_ALL",
+						"1000g_AF": "$1000g_AF",
+						"gnomAD_genome_OTH": "$gnomAD_genome_OTH",
+						"CANONICAL": "$CANONICAL",
+						"1000g_EAS_AF": "$1000g_EAS_AF",
+						"HGNC_SYMONYMS": "$HGNC_SYMONYMS",
+						"HGNC_PRE_SYMBOL": "$HGNC_PRE_SYMBOL"
 					}
 				}`
 
@@ -143,7 +187,7 @@ module.exports = {
 				pipeline.push(JSON.parse(project))
 				pipeline.push(JSON.parse(offset))
 				pipeline.push(JSON.parse(limit))
-				console.log(pipeline);
+
 				//pipecount
 				pipeCount.push({ $group: { _id: null, count: { $sum: 1 } } })
 				return Promise.all([collection.aggregate(pipeline, { allowDiskUse: true }).toArray(), collection.aggregate(pipeCount, { allowDiskUse: true }).toArray()])
@@ -179,6 +223,48 @@ module.exports = {
 				return res.json({ status: 'success', data: { bamUrl: bamUrl, indexBamUrl: indexBamUrl } })
 			})
 			.catch(error => {
+				console.log(error);
+				return res.json({ status: 'error' })
+			})
+	},
+
+	getGeneDetail: (req, res) => {
+		let geneName = req.body.gene;
+		return Promise.all([Gene.findOne({ name: geneName }), Genepli.findOne({ gene: geneName })])
+			.then(result => {
+				let gene = result[0];
+				let genePli = result[1]
+
+				if (genePli) {
+					genePli.exp_syn = numeral(genePli.exp_syn).format('0,0.0');
+					genePli.exp_mis = numeral(genePli.exp_mis).format('0,0.0');
+					genePli.exp_lof = numeral(genePli.exp_lof).format('0,0.0');
+					genePli.syn_z = numeral(genePli.syn_z).format('0,0.00');
+					genePli.mis_z = numeral(genePli.mis_z).format('0,0.00');
+					genePli.lof_z = numeral(genePli.lof_z).format('0,0.00');
+					genePli.pLI = numeral(genePli.pLI).format('0,0.00');
+
+					genePli.pLI = genePli.pLI != "NaN" ? genePli.pLI : 0;
+				}
+
+
+
+				let geneInfo = {
+					full_name: gene ? gene.full_name : "",
+					genePli: genePli
+				}
+
+				if (gene.NCBI_summary != null) {
+					geneInfo.function = gene.NCBI_summary
+				} else if (gene.summary != null) {
+					geneInfo.function = gene.summary
+				} else if (gene.GHR_summary != '') {
+					geneInfo.function = gene.GHR_summary
+				}
+
+				return res.json({ status: 'success', data: geneInfo })
+			})
+			.catch(err => {
 				console.log(error);
 				return res.json({ status: 'error' })
 			})

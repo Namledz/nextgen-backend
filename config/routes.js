@@ -26,12 +26,13 @@ module.exports.routes = {
 	'GET /analysis/:id': 'AnalysisController.getAnalysisName',
 	'GET /analysis-info/:id': 'AnalysisController.getAnalysisInfo',
 	'POST /variant/:id': 'VariantController.variant',
-	'GET /analysis/get-igv-info/:id' : 'VariantController.getIgvInfo',
-	'POST /analysis/list/:id' : 'AnalysisController.list',
-	'POST /workspaces/list' : 'WorkspacesController.listWorkspaces',
+	'GET /analysis/get-igv-info/:id': 'VariantController.getIgvInfo',
+	'POST /analysis/list/:id': 'AnalysisController.list',
+	'POST /workspaces/list': 'WorkspacesController.listWorkspaces',
+	'POST /getGeneDetail': 'VariantController.getGeneDetail',
 
 	//SamplesController
-	'POST /samples/list' : 'SamplesController.list',
+	'POST /samples/list': 'SamplesController.list',
 
 	// WorkspacesController
 	'GET /workspace/project-name/:id': 'WorkspacesController.getProjectName',
