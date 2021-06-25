@@ -7,7 +7,7 @@
 
 module.exports = {
 
-	tableName: 'api_keys',
+	tableName: 'samples',
 	primaryKey: 'id',
 	attributes: {
 		id: {

@@ -5,9 +5,9 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
- const PromiseBlueBird = require('bluebird');
- const sqlString = require('sqlstring');
- const moment = require('moment');
+const PromiseBlueBird = require('bluebird');
+const sqlString = require('sqlstring');
+const moment = require('moment');
 
 module.exports = {
 	getAnalysisName: (req, res) => {
@@ -100,7 +100,7 @@ module.exports = {
 		`
 
 		PromiseBlueBird.all([Analysis.getDatastore().sendNativeQuery(queryStringFind), Analysis.getDatastore().sendNativeQuery(queryStringCount)])
-			.spread((data,count) => {
+			.spread((data, count) => {
 				data.rows.forEach(e => {
 					e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
 					e.updatedAt = `${moment(e.updatedAt).format('MM/DD/YYYY')}`
@@ -119,89 +119,55 @@ module.exports = {
 					total: 0
 				})
 			})
-		// let data = [
-		// 	{
-		// 		id: 1,
-		// 		name: 'Analysis 1',
-		// 		owner: `info@genetics.vn`,
-		// 		type: 'vcf',
-		// 		sample: `EX1`,
-		// 		permission: 'admin',
-		// 		created: '06/20/2021',
-		// 		updated: '06/20/2021'
-		// 	},
-		// 	{
-		// 		id: 2,
-		// 		name: 'Analysis 2',
-		// 		owner: `info@genetics.vn`,
-		// 		type: 'vcf',
-		// 		sample: `EX2`,
-		// 		permission: 'admin',
-		// 		created: '06/20/2021',
-		// 		updated: '06/20/2021'
-		// 	},
-		// 	{
-		// 		id: 3,
-		// 		name: 'Analysis 3',
-		// 		owner: `info@genetics.vn`,
-		// 		type: 'vcf',
-		// 		sample: `EX3`,
-		// 		permission: 'admin',
-		// 		created: '06/20/2021',
-		// 		updated: '06/20/2021'
-		// 	},
-		// 	{
-		// 		id: 4,
-		// 		name: 'Analysis 4',
-		// 		owner: `info@genetics.vn`,
-		// 		type: 'vcf',
-		// 		sample: `EX4`,
-		// 		permission: 'admin',
-		// 		created: '06/20/2021',
-		// 		updated: '06/20/2021'
-		// 	},
-		// 	{
-		// 		id: 5,
-		// 		name: 'Analysis 5',
-		// 		owner: `info@genetics.vn`,
-		// 		type: 'fastq',
-		// 		sample: `EX1`,
-		// 		permission: 'admin',
-		// 		created: '06/20/2021',
-		// 		updated: '06/20/2021'
-		// 	},
-		// 	{
-		// 		id: 6,
-		// 		name: 'Analysis 6',
-		// 		owner: `info@genetics.vn`,
-		// 		type: 'fastq',
-		// 		sample: `EX2`,
-		// 		permission: 'admin',
-		// 		created: '06/20/2021',
-		// 		updated: '06/20/2021'
-		// 	},
-		// 	{
-		// 		id: 7,
-		// 		name: 'Analysis 7',
-		// 		owner: `info@genetics.vn`,
-		// 		type: 'fastq',
-		// 		sample: `EX3`,
-		// 		permission: 'admin',
-		// 		created: '06/20/2021',
-		// 		updated: '06/20/2021'
-		// 	},
-		// 	{
-		// 		id: 8,
-		// 		name: 'Analysis 8',
-		// 		owner: `info@genetics.vn`,
-		// 		type: 'fastq',
-		// 		sample: `EX4`,
-		// 		permission: 'admin',
-		// 		created: '06/20/2021',
-		// 		updated: '06/20/2021'
-		// 	},
-		// ];
-		// return res.json({ items: data, total: 4 })
+	},
+	getVenndatas: (req, res) => {
+		let d = req.body.data;
+		let sampleIds = d.sampleIds;
+		let analysisId = 726;
+		console.log(sampleIds);
+		sampleIds.sort(function (a, b) {
+			return parseInt(a) - parseInt(b)
+		});
+
+		AnalysisService.getVenndatas(analysisId, sampleIds)
+			.then(r => {
+				let data = r[0]
+				let resData = [];
+				console.log(r);
+				if (sampleIds.length == 3) {
+					let a = data[0];
+					let b = data[1];
+					let c = data[3];
+					resData = [
+						{ name: a, value: 10 },
+						{ name: b, value: 10 },
+						{ name: data[2], value: 3, sets: [a, b] },
+						{ name: c, value: 10 },
+						{ name: data[4], value: 3, sets: [a, c] },
+						{ name: data[5], value: 3, sets: [b, c] },
+						{ name: data[6], value: 2, sets: [a, b, c] }
+					];
+				} else if (sampleIds.length == 2) {
+					let a = data[0];
+					let b = data[1];
+					resData = [
+						{ name: a, value: 10 },
+						{ name: b, value: 10 },
+						{ name: data[2], value: 3, sets: [a, b] }
+					]
+				} else if (sampleIds.length == 1) {
+					let a = data[0];
+					resData = [
+						{ name: a, value: 10 }
+					]
+
+				}
+				console.log(resData);
+				return res.json({ status: 'success', data: resData });
+			})
+			.catch(error => {
+
+			})
 	}
 };
 
