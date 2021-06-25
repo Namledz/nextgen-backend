@@ -60,6 +60,9 @@
 		status: {
 			type: 'number'
 		},
+		variants_to_report: {
+			type: 'text'
+		},
 		createdAt: {
 			type: 'ref',
 			columnType: 'timestamp',
