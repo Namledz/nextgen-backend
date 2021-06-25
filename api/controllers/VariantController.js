@@ -33,7 +33,7 @@ module.exports = {
 		MongodbService.mongodbConnect()
 			.then(function (mdb) {
 				db = mdb;
-				let database = db.db('database');
+				let database = db.db('genomics');
 				let collection = database.collection(`analysis_collection_${id}`)
 				let matchAnd = []
 				let limit = `
@@ -323,7 +323,7 @@ module.exports = {
 					MongodbService.mongodbConnect()
 						.then(function (mdb) {
 							db = mdb;
-							let database = db.db('database');
+							let database = db.db('genomics');
 							let collection = database.collection(`analysis_collection_${id}`)
 
 							let project =
