@@ -124,49 +124,57 @@ module.exports = {
 		let d = req.body.data;
 		let sampleIds = d.sampleIds;
 		let analysisId = 726;
-		console.log(sampleIds);
 		sampleIds.sort(function (a, b) {
 			return parseInt(a) - parseInt(b)
 		});
+		console.log(sampleIds);
 
 		AnalysisService.getVenndatas(analysisId, sampleIds)
 			.then(r => {
 				let data = r[0]
 				let resData = [];
 				console.log(r);
+				let colors = {
+					'6427': '#eb418b',
+					'6428': '#9a96ec',
+					'6429': '#f5d770',
+					'6430': '#1BC5BD'
+				}
 				if (sampleIds.length == 3) {
 					let a = data[0];
 					let b = data[1];
 					let c = data[3];
 					resData = [
-						{ name: a, value: 10 },
-						{ name: b, value: 10 },
-						{ name: data[2], value: 3, sets: [a, b] },
-						{ name: c, value: 10 },
-						{ name: data[4], value: 3, sets: [a, c] },
-						{ name: data[5], value: 3, sets: [b, c] },
-						{ name: data[6], value: 2, sets: [a, b, c] }
+						{ name: a, value: 10, color: colors[sampleIds[0]]},
+						{ name: b, value: 10, color: colors[sampleIds[1]] },
+						{ name: data[2]/2, value: 3, sets: [a, b] },
+						{ name: c, value: 10, color: colors[sampleIds[2]] },
+						{ name: data[4]/2, value: 3, sets: [a, c] },
+						{ name: data[5]/2, value: 3, sets: [b, c] },
+						{ name: data[6]/3, value: 2, sets: [a, b, c] }
 					];
 				} else if (sampleIds.length == 2) {
 					let a = data[0];
 					let b = data[1];
 					resData = [
-						{ name: a, value: 10 },
-						{ name: b, value: 10 },
-						{ name: data[2], value: 3, sets: [a, b] }
+						{ name: a, value: 10, color: colors[sampleIds[0]] },
+						{ name: b, value: 10, color: colors[sampleIds[1]] },
+						{ name: data[2]/2, value: 3, sets: [a, b] }
 					]
 				} else if (sampleIds.length == 1) {
 					let a = data[0];
 					resData = [
-						{ name: a, value: 10 }
+						{ name: a, value: 10, color: colors[sampleIds[0]] }
 					]
 
 				}
-				console.log(resData);
+				// console.log(1);
+				// console.log(resData);
 				return res.json({ status: 'success', data: resData });
 			})
 			.catch(error => {
-
+				console.log(error);
+				return res.json({ status: 'error' });
 			})
 	}
 };

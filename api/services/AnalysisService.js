@@ -50,9 +50,9 @@ module.exports = {
 					let resultItem = rawVenn[caseIndex];
 
 					if (resultItem.length == 1) {
-						var lengR = resultItem[0].sample_ids.split('|').length - 2;
+						var lengR = resultItem.sample_ids.split('|').length - 2;
 						var lengC = caseIds.split('_').length;
-						count = (resultItem[0].count / lengR) * lengC;
+						count = (resultItem.count / lengR) * lengC;
 					} else if (resultItem.length > 0) {
 						let lengR
 						let lengC = caseIds.split('_').length;
