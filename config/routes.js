@@ -37,11 +37,15 @@ module.exports.routes = {
 	'POST /analysis/list/:id' : 'AnalysisController.list',
 	'POST /workspaces/list' : 'WorkspacesController.listWorkspaces',
 
+	'GET /workspaces/get-workspace-name': 'WorkspacesController.getProjectName',
+
 	//SamplesController
 	'POST /samples/list': 'SamplesController.list',
 
 	// WorkspacesController
 	'GET /workspace/project-name/:id': 'WorkspacesController.getProjectName',
+
+	'POST /analyses-list' : 'AnalysisController.getAnalysesList',
 
 	'POST /analysis/venn-data': 'AnalysisController.getVenndatas'
 
