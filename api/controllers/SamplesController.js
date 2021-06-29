@@ -51,12 +51,13 @@ module.exports = {
         let promise = []
 
         samples.forEach(sample => {
+			let sizeInMB = (sample.fileSize / (1024 * 1024)).toFixed(2);
             promise.push(Analysis.create({
                 name: sample.sampleName,
                 user_id: 1,
                 project_id: sample.project_id,
                 p_type: sample.fileType,
-                size: sample.fileSize,
+				size: sizeInMB,
                 status: 2,
                 variants: 100000
             }))
