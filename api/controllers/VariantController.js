@@ -105,6 +105,7 @@ module.exports = {
 						"location": "$varLocation",
 						"coverage": "$coverage",
 						"gnomad": "$gnomAD_exome_ALL",
+						"gnomad_ALL": "$gnomAD_exome_ALL",
 						"cosmicID": "$cosmicIds",
 						"classification": "$CLINSIG_FINAL",
 						"clinvar": "$Clinvar_VARIANT_ID",

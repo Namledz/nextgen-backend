@@ -42,6 +42,7 @@ module.exports.routes = {
 
 	//SamplesController
 	'POST /samples/list': 'SamplesController.list',
+	'POST /uploadSample': 'SamplesController.uploadSample',
 
 	// WorkspacesController
 	'GET /workspace/project-name/:id': 'WorkspacesController.getProjectName',
