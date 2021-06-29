@@ -8,6 +8,7 @@
 const PromiseBlueBird = require('bluebird');
 const sqlString = require('sqlstring');
 const moment = require('moment');
+
 module.exports = {
     list: (req,res) => {
 
@@ -43,5 +44,32 @@ module.exports = {
                     total: count.rows[0].total
                 })
             })
+    },
+
+    uploadSample: (req, res) => {
+        let samples = req.body.files
+        let promise = []
+
+        samples.forEach(sample => {
+            promise.push(Analysis.create({
+                name: sample.sampleName,
+                user_id: 1,
+                project_id: sample.project_id,
+                p_type: sample.fileType,
+                size: sample.fileSize,
+                status: 2,
+                variants: 100000
+            }))
+        })
+
+        return Promise.all(promise)
+        .then(result => {
+            return res.json({ status: 'success', data: [] })
+        })
+        .catch(err => {
+            return res.json({ status: 'error', data: [] })
+        })
+
+
     }
 }
