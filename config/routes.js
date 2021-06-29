@@ -36,6 +36,7 @@ module.exports.routes = {
 	'GET /analysis/get-igv-info/:id' : 'VariantController.getIgvInfo',
 	'POST /analysis/list/:id' : 'AnalysisController.list',
 	'POST /workspaces/list' : 'WorkspacesController.listWorkspaces',
+	'POST /getLineageDetail' : 'SarcovController.getLineageDetail',
 
 	'GET /workspaces/get-workspace-name': 'WorkspacesController.getProjectName',
 

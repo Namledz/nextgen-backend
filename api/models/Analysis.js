@@ -61,7 +61,7 @@
 			type: 'number'
 		},
 		variants_to_report: {
-			type: 'text',
+			type: 'string',
 			allowNull: true
 		},
 		createdAt: {
