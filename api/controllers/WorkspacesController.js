@@ -77,6 +77,7 @@ module.exports = {
 	getProjectName: (req, res) => {
 		let id = req.params.id;
 		Workspaces.findOne({ id: id }).then(w => {
+			console.log(w);
 			return res.json({ status: 'success', data: w.name })
 		})
 		.catch(error => {
