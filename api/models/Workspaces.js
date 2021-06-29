@@ -34,6 +34,11 @@ module.exports = {
 			type: 'string',
 			allowNull: true
 		},
+		dashboard: {
+			type: 'string',
+			columnType: 'text',
+			allowNull: true
+		},
 		createdAt: {
 			type: 'ref',
 			columnType: 'timestamp',
