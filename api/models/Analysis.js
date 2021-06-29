@@ -55,7 +55,9 @@
 			type: 'number'
 		},
 		size: {
-			type: 'number'
+			type: 'number',
+			columnType: 'decimal(15,2)',
+			allowNull: true
 		},
 		status: {
 			type: 'number'
