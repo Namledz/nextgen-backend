@@ -176,6 +176,59 @@ module.exports = {
 				console.log(error);
 				return res.json({ status: 'error' });
 			})
+	},
+
+	getAnalysesList: (req, res) => {
+		let id = req.params.id;
+		let queryStr = `
+			LEFT JOIN users as u
+			ON a.user_id = u.id
+			LEFT JOIN workspace as w
+			ON a.project_id = w.id
+		`
+
+		let queryStringFind = `
+			SELECT
+				a.id,
+				a.name,
+				a.createdAt,
+				a.updatedAt,
+				u.email,
+				u.role,
+				w.name as project_name,
+				w.id as project_id,
+				a.status
+			FROM 
+				analyses_list as a
+		${queryStr}
+		`
+
+		let queryStringCount = `
+			SELECT COUNT (*) as total
+			FROM
+				analyses_list as a
+			${queryStr}
+		`
+
+		PromiseBlueBird.all([AnalysesList.getDatastore().sendNativeQuery(queryStringFind), AnalysesList.getDatastore().sendNativeQuery(queryStringCount)])
+			.spread((data, count) => {
+				data.rows.forEach(e => {
+					e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
+					e.updatedAt = `${moment(e.updatedAt).format('MM/DD/YYYY')}`
+					e.status = e.status == 2 ? 'Analyzed' : ''
+				})
+				return res.json({
+					items: data.rows,
+					total: count.rows[0].total
+				})
+			})
+			.catch(error => {
+				console.log("Error ", error)
+				return res.json({
+					items: [],
+					total: 0
+				})
+			})
 	}
 };
 
