@@ -16,7 +16,8 @@ module.exports = {
 			.then(a => {
 				let data = {
 					name: a.name,
-					type: a.p_type
+					type: a.p_type,
+					project_id: a.project_id
 				}
 				return res.json({ status: 'success', data })
 			})
@@ -86,7 +87,8 @@ module.exports = {
 				a.analyzed,
 				a.variants,
 				a.size,
-				a.status
+				a.status,
+				a.p_type as type
 			FROM 
 				analysis as a
 		${queryStr}
