@@ -97,6 +97,26 @@ module.exports = {
 			.catch(error => {
 				return res.json({status: 'error'})
 			})
+	},
+
+	updateWorkspaceDashboard: (req,res) => {
+		let data = req.body.data
+		let id = data.id
+		let dashboardInfo = data.dashboardInfo
+
+		Workspaces.update({id:id}, {dashboard: dashboardInfo}).fetch()
+			.then(result => {
+				if (result) {
+					return res.json({
+						status: 'success',
+						message: 'Updated Successfully !'
+					})
+				}
+			})
+			.catch(error => {
+				console.log(error)
+				return res.json({status: 'error'})
+			})
 	}
 };
 
