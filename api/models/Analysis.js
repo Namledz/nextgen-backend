@@ -79,7 +79,8 @@
 	},
 
 	statuses: {
-		ANALYZED: 2
+		ANALYZED: 2,
+		QUEUING: 1
 	}
 };
 

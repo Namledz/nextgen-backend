@@ -58,7 +58,7 @@ module.exports = {
                 project_id: sample.project_id,
                 p_type: sample.fileType,
 				size: sizeInMB,
-                status: 2,
+                status: 1,
                 variants: 100000
             }))
         })

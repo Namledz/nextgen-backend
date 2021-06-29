@@ -107,7 +107,7 @@ module.exports = {
 					e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
 					e.updatedAt = `${moment(e.updatedAt).format('MM/DD/YYYY')}`
 					e.analyzed = `${moment(e.analyzed).format('MM/DD/YYYY')}`
-					e.status = e.status == 2 ? 'Analyzed' : ''
+					e.status = e.status == 2 ? 'Analyzed' : 'Queuing'
 					e.size = e.size > 1000 ? `${e.size/1000} GB` : `${e.size} MB`
 				})
 				return res.json({
