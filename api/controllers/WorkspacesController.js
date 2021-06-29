@@ -83,7 +83,20 @@ module.exports = {
 			console.log(error);
 			return res.json({ status: 'error' })
 		})
-	}
+	},
 
+	getWorkspaceDashboard: (req,res) => {
+		let id = req.params.id
+		Workspaces.findOne({id: id})
+			.then(result => {
+				return res.json({
+					status: 'success',
+					data: result.dashboard
+				})
+			})
+			.catch(error => {
+				return res.json({status: 'error'})
+			})
+	}
 };
 

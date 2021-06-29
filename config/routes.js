@@ -43,7 +43,8 @@ module.exports.routes = {
 	// WorkspacesController
 	'GET /workspace/project-name/:id': 'WorkspacesController.getProjectName',
 
-	'POST /analysis/venn-data': 'AnalysisController.getVenndatas'
+	'POST /analysis/venn-data': 'AnalysisController.getVenndatas',
+	'GET /workspaces/dashboard/:id': 'WorkspacesController.getWorkspaceDashboard'
 
 
 
