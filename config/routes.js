@@ -51,7 +51,11 @@ module.exports.routes = {
 
 	'POST /analysis/venn-data': 'AnalysisController.getVenndatas',
 	'GET /workspaces/dashboard/:id': 'WorkspacesController.getWorkspaceDashboard',
-	'POST /workspaces/update': 'WorkspacesController.updateWorkspaceDashboard'
+	'POST /workspaces/update': 'WorkspacesController.updateWorkspaceDashboard',
+
+	// UsersController
+
+	'POST /users/login': 'UsersController.login'
 
 
 
