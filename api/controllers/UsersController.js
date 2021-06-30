@@ -10,11 +10,13 @@ module.exports = {
     login: (req,res) => {
         let email = req.body.email
         let password = req.body.password
+		let data = 
 
         Users.findOne({email: email})
             .then(result => {
                 if (result) {
-                    if ( password = result.password) {
+                    if ( password == result.password) {
+						res.cookie('access_token', 'loggedin', sails.config.COOKIES_CONFIG);
                         return res.json({
                             status: "success",
                             message: "Logged in successfully !",
@@ -35,5 +37,9 @@ module.exports = {
                 console.log(error)
                 return res.json({status: "error"})
             })
-    }
+    },
+
+	getCurrentUser: (req, res) => {
+		return res.json({ status: 'success', data: req.user });
+	},
 }

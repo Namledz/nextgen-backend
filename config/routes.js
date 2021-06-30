@@ -55,7 +55,9 @@ module.exports.routes = {
 
 	// UsersController
 
-	'POST /users/login': 'UsersController.login'
+	'POST /users/login': 'UsersController.login',
+
+	'GET /users/getCurrentUser ': 'UsersController.getCurrentUser'
 
 
 

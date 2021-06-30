@@ -136,7 +136,7 @@ module.exports = {
 			.then(r => {
 				let data = r[0]
 				let resData = [];
-				console.log(r);
+				// console.log(r);
 				let colors = {
 					'6427': '#eb418b',
 					'6428': '#9a96ec',
