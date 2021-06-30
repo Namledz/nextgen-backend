@@ -50,7 +50,7 @@ module.exports = {
 			.then(a => {
 				let d = a.rows[0];
 				if (d.p_type == 'vcf') {
-					d.pipeline = 'Variant calling(FreeBayes)';
+					d.pipeline = 'DNA-Seq QC, Alignment (BWA)';
 				} else {
 					d.pipeline = 'DNA-Seq QC, Alignment (BWA)';
 				}
