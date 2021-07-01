@@ -42,4 +42,9 @@ module.exports = {
 	getCurrentUser: (req, res) => {
 		return res.json({ status: 'success', data: req.user });
 	},
+
+	logout: (req, res) => {
+		res.clearCookie('access_token', sails.config.COOKIES_CONFIG);
+		return ResponseService.success(res, "Logged out successfully!");
+	}
 }

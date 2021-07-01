@@ -37,9 +37,9 @@ module.exports = {
                 workspace.id, 
                 workspace.name, 
                 workspace.last_modified as lastModified, 
-                workspace.user_created_id as createdBy, 
-                t.total as number,
+                workspace.number as number,
 				u.email as createdBy,
+				u.role,
                 workspace.pipeline	
             FROM
                 workspace
@@ -65,6 +65,7 @@ module.exports = {
 			.then((data) => {
                 data.rows.forEach(e => {
                     e.lastModified = e.lastModified ? `${moment(e.lastModified).format('MM/DD/YYYY')}` :  '';
+					e.access = e.role == 1 ? 'Owner' : 'Reader'
 				});
 				return res.json({ items: data.rows, total: allData.length })
 			})
