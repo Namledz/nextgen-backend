@@ -45,6 +45,6 @@ module.exports = {
 
 	logout: (req, res) => {
 		res.clearCookie('access_token', sails.config.COOKIES_CONFIG);
-		return ResponseService.success(res, "Logged out successfully!");
+		return res.json({status: 'success', message: '"Logged out successfully!"'});
 	}
 }
