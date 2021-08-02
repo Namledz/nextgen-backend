@@ -124,9 +124,10 @@ module.exports = {
 
 		let queryString = `
             SELECT
+                users.id,
                 users.username,
                 users.email,
-                CONCAT(users.first_name, ' ', users.last_name),
+                CONCAT(users.first_name, ' ', users.last_name) as name,
                 users.role,
                 users.status,
                 users.institution,

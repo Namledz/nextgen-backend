@@ -21,7 +21,9 @@ module.exports.policies = {
 
 
 	UsersController: {
-		'getCurrentUser': ['auth']
+		'getCurrentUser': ['auth'],
+		'getUsers': ['auth'],
+		'deleteUser': ['auth']
 	}
 
 };
