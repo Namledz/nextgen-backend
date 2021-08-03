@@ -21,7 +21,24 @@ module.exports = {
         Users.findOne({email: email})
             .then(result => {
                 if (result) {
-                    return bcrypt.compare(escape(password), result.password)
+                    if(result.status == Users.statuses.PENDING) {
+                        let err = new Error('Your account is not approved!');
+                        err.isCustomError = true;
+                        throw err
+                    }
+                    else if(result.status == Users.statuses.DISABLED) {
+                        let err = new Error('Your account is not activated!');
+                        err.isCustomError = true;
+                        throw err
+                    }
+                    else if(result.status == Users.statuses.DELETED) {
+                        let err = new Error('Your account has been deleted. Please contact admin!');
+                        err.isCustomError = true;
+                        throw err
+                    }
+                    else {
+                        return bcrypt.compare(escape(password), result.password)
+                    }
                 }
                 else {
                     let err = new Error('Your account is not registered!');
@@ -205,7 +222,7 @@ module.exports = {
             })
             .then(user => {
                 if (user) {
-                    let url = `${sails.config.front_end.host}/auth/set-password/:${user.id}`;
+                    let url = `${sails.config.front_end.host}/auth/set-password/${user.id}`;
                     let mailOptions = {
                         from: sails.config.SMTP_HOST.from,
                         to: user.email,
