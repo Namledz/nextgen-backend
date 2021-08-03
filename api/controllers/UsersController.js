@@ -12,37 +12,49 @@ const sqlString = require('sqlstring');
 const moment = require('moment');
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport(sails.config.SMTP_HOST);
+const escape = require('html-escape');
 
 module.exports = {
     login: (req,res) => {
         let email = req.body.email
         let password = req.body.password
-		let data = 
 
         Users.findOne({email: email})
             .then(result => {
                 if (result) {
-                    if ( password == result.password) {
-						res.cookie('access_token', 'loggedin', sails.config.COOKIES_CONFIG);
-                        return res.json({
-                            status: "success",
-                            message: "Logged in successfully !",
-                            data: result
-                        })
-                    }
-                    return res.json ({
-                        status: "error",
-                        message: "Your password is incorrect"
+                    return bcrypt.compare(escape(password), loginResult.password)
+                }
+                else {
+                    let err = new Error('Your account is not registered!');
+                    err.isCustomError = true;
+                    throw err
+                }
+            })
+            .then(isPasswordMatched => {
+                if(isPasswordMatched) {
+                    res.cookie('access_token', 'loggedin', sails.config.COOKIES_CONFIG);
+                    return res.json({
+                        status: "success",
+                        message: "Logged in successfully !",
+                        data: result
                     })
                 }
                 return res.json ({
                     status: "error",
-                    message: "Your account does not exist !"
+                    message: "Your password is incorrect"
                 })
             })
             .catch(error => {
-                console.log(error)
-                return res.json({status: "error"})
+				if(error.isCustomError) {
+                    return res.json({
+                        status: 'error',
+                        message: error.message
+                    })
+                }
+                else {
+                    console.log(error);
+                    return res.json({ status: 'error' })
+                }
             })
     },
 
@@ -88,9 +100,6 @@ module.exports = {
 			case 'name':
 				sortField = `CONCAT(users.first_name, ' ', users.last_name) ${direction}`
 				break;
-            case 'username':
-                sortField = `users.username ${direction}`
-                break;
             case 'email':
                 sortField = `users.email ${direction}`
                 break;
@@ -115,7 +124,6 @@ module.exports = {
 		if (searchTerm != '') {
 			searchFilter = ` AND ( users.first_name LIKE ${sqlSearchTerm}
 				OR users.last_name LIKE ${sqlSearchTerm}
-                OR users.username LIKE ${sqlSearchTerm}
 				OR users.email LIKE ${sqlSearchTerm}
 				OR CONCAT(users.first_name, ' ', users.last_name) LIKE ${sqlSearchTerm}
                 OR users.institution LIKE ${sqlSearchTerm}
@@ -125,7 +133,6 @@ module.exports = {
 		let queryString = `
             SELECT
                 users.id,
-                users.username,
                 users.email,
                 CONCAT(users.first_name, ' ', users.last_name) as name,
                 users.role,
@@ -138,7 +145,7 @@ module.exports = {
 			users.role IN ( ${sqlString.escape(role)} )
 			AND users.status IN ( ${sqlString.escape(status)} )
 			${searchFilter}
-			AND user.id !=  ${sqlString.escape(req.user.id)}`
+			AND users.id !=  ${sqlString.escape(req.user.id)}`
 
 		let queryStringCount = queryString
 
@@ -147,6 +154,7 @@ module.exports = {
 			ORDER BY ${sortField}
 			LIMIT ${pageSize} OFFSET ${skip}
 		`
+
 		Users.getDatastore().sendNativeQuery(queryStringCount)
 			.then((count) => {
 				allData = count.rows;
@@ -172,11 +180,10 @@ module.exports = {
     createUser: (req, res) => {
 		let userCreated = {
             email: req.body.email,
-            username: req.body.username,
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
-			role: req.body.role ? req.body.role : Users.roles.USER,
-            status: req.body.status ? req.body.status : Users.statuses.PENDING,
+            role: req.body.role ?  Users.getUserRoleNumber(req.body.role) : Users.roles.USER,
+            status: req.body.status ? Users.getUserStatusNumber(req.body.status) : Users.statuses.PENDING,
 			user_created: req.user.id,
 			institution: req.body.institution ? req.body.institution : null,
 			group: req.body.group ? req.body.group : null
@@ -186,15 +193,15 @@ module.exports = {
             .then((mail) => {
                 if(mail) {
                     let err = new Error('Your email has already exists!');
-                    error.isCustomError = true;
+                    err.isCustomError = true;
                     throw err
                 }
-                else if(req.body.first_name && req.body.last_name && req.body.email && req.body.username) {
+                else if(req.body.first_name && req.body.last_name && req.body.email) {
                     return Users.create(userCreated).fetch()
                 }
                 else {
                     let err = new Error('You must fill all required fields!');
-                    error.isCustomError = true;
+                    err.isCustomError = true;
                     throw err
                 }
             })
@@ -204,7 +211,7 @@ module.exports = {
                     let mailOptions = {
                         from: sails.config.SMTP_HOST.from,
                         to: user.email,
-                        subject: '',
+                        subject: 'Notification',
                         html: `Hi there,<br>
                             Click the link below to set your password:
                             <br>${url}<br>
@@ -215,7 +222,7 @@ module.exports = {
                 }
                 else {
                     let err = new Error('Error!');
-                    error.isCustomError = true;
+                    err.isCustomError = true;
                     throw err
                 }
             })
@@ -226,11 +233,10 @@ module.exports = {
                 })
             })
 			.catch(error => {
-                console.log(error)
 				if(error.isCustomError) {
                     return res.json({
                         status: 'error',
-                        message: error
+                        message: error.message
                     })
                 }
                 else {
@@ -248,6 +254,7 @@ module.exports = {
             .then(result => {
                 result.status = Users.getUserStatus(result.status);
                 result.role = Users.getUserRole(result.role);
+                result.password = null;
                 return res.send(result)
             })
             .catch(error => {
@@ -261,42 +268,39 @@ module.exports = {
         let id = req.body.id
         let userUpdated = {
             email: req.body.email,
-            username: req.body.username,
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
-            password: bcrypt.hashSync(req.body.password, 10),
 			role: req.body.role ?  Users.getUserRoleNumber(req.body.role) : null,
             status: req.body.status ? Users.getUserStatusNumber(req.body.status) : null,
-			user_created: req.user.id,
 			institution: req.body.institution ? req.body.institution : null,
 			group: req.body.group ? req.body.group : null
 		}
 
-        Users.findOne({ email: req.body.email })
+        if(req.body.password) {
+            userUpdated.password = bcrypt.hashSync(req.body.password, 10)
+        }
+
+        let userStatus;
+
+        Users.findOne({id})
+            .then(userMatch => {
+                userStatus = userMatch.status;
+                return Users.findOne({ and: [{email: req.body.email}, { email: { '!=': userMatch.email }}] })
+            })
             .then(userFound => {
                 if(userFound) {
                     let err = new Error('Email already existed!');
-                    error.isCustomError = true;
+                    err.isCustomError = true;
                     throw err
                 }
-                else if(req.body.first_name && req.body.last_name && req.body.email && req.body.username) {
-                    return Users.findOne({id})
-                }
-                else {
-                    let err = new Error('You must fill all required fields!');
-                    error.isCustomError = true;
-                    throw err
-                }
-            })
-            .then(userMatch => {
-                if(userMatch) {
+                else if(req.body.first_name && req.body.last_name && req.body.email) {
                     let promises = [];
-                    if(userMatch.status == Users.statuses.PENDING && Users.getUserStatusNumber(req.body.status) == Users.statuses.ACTIVE) {
+                    if(userStatus == Users.statuses.PENDING && Users.getUserStatusNumber(req.body.status) == Users.statuses.ACTIVE) {
                         let url = `${sails.config.front_end.host}/auth/login`;
                         let mailOptions = {
                             from: sails.config.SMTP_HOST.from,
-                            to: user.email,
-                            subject: '',
+                            to: req.body.email,
+                            subject: 'Welcome',
                             html: `Hi there,<br>
                                 Your account was created. Please click the following link to login:
                                 <br>${url}<br>
@@ -310,24 +314,22 @@ module.exports = {
                     return Promise.all(promises)
                 }
                 else {
-                    let err = new Error('Error!');
-                    error.isCustomError = true;
+                    let err = new Error('You must fill all required fields!');
+                    err.isCustomError = true;
                     throw err
                 }
             })
             .then(data => {
-                console.log(data)
                 return res.json({
                     status: 'success',
                     message: 'Updated user successfully!'
                 })
             })
 			.catch(error => {
-                console.log(error)
 				if(error.isCustomError) {
                     return res.json({
                         status: 'error',
-                        message: error
+                        message: error.message
                     })
                 }
                 else {
@@ -369,7 +371,7 @@ module.exports = {
             .then(result => {
                 return res.json({
                     status: 'success',
-                    message: 'Your password has been set. Admin will activate your account soon!'
+                    message: 'Your password has been set successfully. Admin will activate your account soon!'
                 }) 
 			})
 			.catch(error => {

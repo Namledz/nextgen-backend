@@ -23,7 +23,14 @@ module.exports.policies = {
 	UsersController: {
 		'getCurrentUser': ['auth'],
 		'getUsers': ['auth'],
-		'deleteUser': ['auth']
+		'deleteUser': ['auth'],
+		'setPasswordUser': true,
+		'deleteUser': ['auth'],
+		'updateUser': ['auth'],
+		'findUserById': ['auth'],
+		'createUser': ['auth'],
+		'login': true,
+		'logout': ['auth']
 	}
 
 };
