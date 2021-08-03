@@ -14,10 +14,6 @@
 			unique: true,
 			autoIncrement: true
 		},
-		username: {
-			type: 'string',
-			allowNull: true
-		},
 		first_name: {
 			type: 'string',
 			allowNull: true

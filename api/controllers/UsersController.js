@@ -12,7 +12,6 @@ const sqlString = require('sqlstring');
 const moment = require('moment');
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport(sails.config.SMTP_HOST);
-const escape = require('html-escape');
 
 module.exports = {
     login: (req,res) => {
@@ -22,7 +21,7 @@ module.exports = {
         Users.findOne({email: email})
             .then(result => {
                 if (result) {
-                    return bcrypt.compare(escape(password), loginResult.password)
+                    return bcrypt.compare(escape(password), result.password)
                 }
                 else {
                     let err = new Error('Your account is not registered!');
@@ -36,7 +35,6 @@ module.exports = {
                     return res.json({
                         status: "success",
                         message: "Logged in successfully !",
-                        data: result
                     })
                 }
                 return res.json ({
@@ -207,7 +205,7 @@ module.exports = {
             })
             .then(user => {
                 if (user) {
-                    let url = `${sails.config.front_end.host}/setPassword/:${user.id}`;
+                    let url = `${sails.config.front_end.host}/auth/set-password/:${user.id}`;
                     let mailOptions = {
                         from: sails.config.SMTP_HOST.from,
                         to: user.email,

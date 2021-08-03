@@ -66,7 +66,7 @@ module.exports.routes = {
 	'GET /users/findUserById/:id': 'UsersController.findUserById',
 	'POST /users/updateUser': 'UsersController.updateUser',
 	'DELETE /users/deleteUser/:id': 'UsersController.deleteUser',
-	'POST /user/setPasswordUser': 'UsersController.setPasswordUser'
+	'POST /users/setPasswordUser': 'UsersController.setPasswordUser'
 
 
 
