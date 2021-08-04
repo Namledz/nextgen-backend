@@ -189,7 +189,10 @@ module.exports = {
 			})
 			.catch(error => {
                 console.log(error);
-				return res.json({ status: 'error' })
+                return res.json({
+					items: [],
+					total: 0
+				});
 			})
 
 	},
@@ -396,4 +399,107 @@ module.exports = {
                 return res.json({ status: 'error' })
 			})  
 	},
+
+    updateForgotPassword: (req, res) => {
+		let id = req.body.id;
+		let password = req.body.password;
+
+        Users.findOne({id})
+            .then(userFound => {
+                if(userFound) {
+                    if(userFound.status == Users.statuses.PENDING) {
+                        let err = new Error('Your account is not approved!');
+                        err.isCustomError = true;
+                        throw err
+                    }
+                    else if(userFound.status == Users.statuses.DISABLED) {
+                        let err = new Error('Your account is not activated!');
+                        err.isCustomError = true;
+                        throw err
+                    }
+                    else if(userFound.status == Users.statuses.DELETED) {
+                        let err = new Error('Your account has been deleted. Please contact admin!');
+                        err.isCustomError = true;
+                        throw err
+                    }
+                    else {
+                        let hashedPassword = bcrypt.hashSync(password, 10);
+                        return Users.update({ id: id }, { password: hashedPassword }).fetch();
+                    }
+                }
+                throw new Error('Error!')
+
+            })
+            .then(result => {
+                return res.json({
+                    status: 'success',
+                    message: 'Update password successfully!'
+                }) 
+			})
+            .catch(error => {
+                if(error.isCustomError) {
+                    return res.json({
+                        status: 'error',
+                        message: error.message
+                    })
+                }
+                else {
+                    console.log(error);
+                    return res.json({ status: 'error' })
+                }
+            }) 
+	},
+
+	forgotPassword: ((req, res) => {
+		let email = req.body.email
+
+        Users.findOne({email: email})
+        .then(result => {
+            if (result) {
+                let url = `${sails.config.front_end.host}/auth/password-recovery/${result.id}`;
+                let mailOptions = {
+                    from: sails.config.SMTP_HOST.from,
+                    to: user.email,
+                    subject: 'Password Recovery',
+                    html: `Hi there,<br>
+                        Click the link below to recover your password:
+                        <br>${url}<br>
+                        Thanks,<br>
+                        Mycovscan`
+                };
+                return transporter.sendMail(mailOptions);
+            }
+            else {
+                let err = new Error('Your account is not registered!');
+                err.isCustomError = true;
+                throw err
+            }
+        })
+        .then(result => {
+            console.log(result)
+            if(result) {
+                return res.json({
+                    status: "success",
+                    message: "Email sent successfully!",
+                })
+            }
+            return res.json ({
+                status: "error",
+                message: "Unknown Error!"
+            })
+        })
+        .catch(error => {
+            if(error.isCustomError) {
+                return res.json({
+                    status: 'error',
+                    message: error.message
+                })
+            }
+            else {
+                console.log(error);
+                return res.json({ status: 'error' })
+            }
+        })
+
+	}),
 }

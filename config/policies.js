@@ -30,7 +30,7 @@ module.exports.policies = {
 		'findUserById': ['auth', 'adminAuth'],
 		'createUser': ['auth', 'adminAuth'],
 		'login': true,
-		'logout': ['auth', 'adminAuth']
+		'logout': ['auth']
 	}
 
 };

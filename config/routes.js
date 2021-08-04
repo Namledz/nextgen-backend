@@ -57,16 +57,18 @@ module.exports.routes = {
 
 	'POST /users/login': 'UsersController.login',
 
-	'GET /users/getCurrentUser ': 'UsersController.getCurrentUser',
+	'/users/getCurrentUser ': 'UsersController.getCurrentUser',
 
 	'/users/logout ': 'UsersController.logout',
 
-	'POST /users/getUsers': 'UsersController.getUsers',
+	'POST /users': 'UsersController.getUsers',
 	'POST /users/createUser': 'UsersController.createUser',
 	'GET /users/findUserById/:id': 'UsersController.findUserById',
 	'POST /users/updateUser': 'UsersController.updateUser',
 	'DELETE /users/deleteUser/:id': 'UsersController.deleteUser',
-	'POST /users/setPasswordUser': 'UsersController.setPasswordUser'
+	'POST /users/setPasswordUser': 'UsersController.setPasswordUser',
+	'POST /users/updatePassword': 'UsersController.updateForgotPassword',
+	'POST /users/forgotPassword': 'UsersController.forgotPassword',
 
 
 

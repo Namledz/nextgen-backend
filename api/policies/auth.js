@@ -6,7 +6,7 @@ module.exports = function (req, res, next) {
 		return next();
 	}
 	if (req.cookies && req.cookies.access_token) {
-		return Users.findOne({id})
+		return Users.findOne({id: req.cookies.access_token})
 			.then(user => {
 				req.user = {
 					id: user.id,
