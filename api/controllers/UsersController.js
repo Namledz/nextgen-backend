@@ -17,6 +17,7 @@ module.exports = {
     login: (req,res) => {
         let email = req.body.email
         let password = req.body.password
+        let userId;
 
         Users.findOne({email: email})
             .then(result => {
@@ -37,6 +38,7 @@ module.exports = {
                         throw err
                     }
                     else {
+                        userId = result.id
                         return bcrypt.compare(escape(password), result.password)
                     }
                 }
@@ -48,7 +50,7 @@ module.exports = {
             })
             .then(isPasswordMatched => {
                 if(isPasswordMatched) {
-                    res.cookie('access_token', 'loggedin', sails.config.COOKIES_CONFIG);
+                    res.cookie('access_token', userId, sails.config.COOKIES_CONFIG);
                     return res.json({
                         status: "success",
                         message: "Logged in successfully !",

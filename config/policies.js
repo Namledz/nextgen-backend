@@ -22,15 +22,15 @@ module.exports.policies = {
 
 	UsersController: {
 		'getCurrentUser': ['auth'],
-		'getUsers': ['auth'],
-		'deleteUser': ['auth'],
+		'getUsers': ['auth', 'adminAuth'],
+		'deleteUser': ['auth', 'adminAuth'],
 		'setPasswordUser': true,
-		'deleteUser': ['auth'],
-		'updateUser': ['auth'],
-		'findUserById': ['auth'],
-		'createUser': ['auth'],
+		'deleteUser': ['auth', 'adminAuth'],
+		'updateUser': ['auth', 'adminAuth'],
+		'findUserById': ['auth', 'adminAuth'],
+		'createUser': ['auth', 'adminAuth'],
 		'login': true,
-		'logout': ['auth']
+		'logout': ['auth', 'adminAuth']
 	}
 
 };
