@@ -459,7 +459,7 @@ module.exports = {
                 let url = `${sails.config.front_end.host}/auth/password-recovery/${result.id}`;
                 let mailOptions = {
                     from: sails.config.SMTP_HOST.from,
-                    to: user.email,
+                    to: result.email,
                     subject: 'Password Recovery',
                     html: `Hi there,<br>
                         Click the link below to recover your password:
