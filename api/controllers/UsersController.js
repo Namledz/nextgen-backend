@@ -36,6 +36,10 @@ module.exports = {
                         let err = new Error('Your account has been deleted. Please contact admin!');
                         err.isCustomError = true;
                         throw err
+                    } else if (!result.password) {
+                        let err = new Error('Your password has not been set!');
+                        err.isCustomError = true;
+                        throw err
                     }
                     else {
                         userId = result.id
