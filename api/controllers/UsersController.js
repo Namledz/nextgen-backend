@@ -136,6 +136,9 @@ module.exports = {
             case 'role':
                 sortField = `users.role ${direction}`
                 break;
+            case 'phone_number':
+                sortField = `users.phone_number ${direction}`
+                break;
 			default:
 				sortField = `users.${column} ${direction}`
 		}
@@ -146,6 +149,7 @@ module.exports = {
 			searchFilter = ` AND ( users.first_name LIKE ${sqlSearchTerm}
 				OR users.last_name LIKE ${sqlSearchTerm}
 				OR users.email LIKE ${sqlSearchTerm}
+                OR users.phone_number LIKE ${sqlSearchTerm}
 				OR CONCAT(users.first_name, ' ', users.last_name) LIKE ${sqlSearchTerm}
                 OR users.institution LIKE ${sqlSearchTerm}
                 OR users.group LIKE ${sqlSearchTerm} )`
@@ -159,7 +163,8 @@ module.exports = {
                 users.role,
                 users.status,
                 users.institution,
-                users.group
+                users.group,
+                users.phone_number
             FROM
                 users
 			WHERE
@@ -206,6 +211,7 @@ module.exports = {
             email: req.body.email,
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
+            phone_number: req.body.phone_number,
             role: req.body.role ?  Users.getUserRoleNumber(req.body.role) : Users.roles.USER,
             status: req.body.status ? Users.getUserStatusNumber(req.body.status) : Users.statuses.PENDING,
 			user_created: req.user.id,
@@ -288,12 +294,30 @@ module.exports = {
 
 	},
 
+    getUserById: (req, res) => {
+		let id = req.params.id;
+
+        return Users.findOne({ id: id })
+            .then(result => {
+                result.status = null;
+                result.role = null;
+                result.password = null;
+                return res.send(result)
+            })
+            .catch(error => {
+                console.log(error);
+                return res.json({ status: 'error' })
+			})
+
+	},
+
     updateUser: (req, res) => {
         let id = req.body.id
         let userUpdated = {
             email: req.body.email,
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
+            phone_number: req.body.phone_number ? req.body.phone_number : null,
 			role: req.body.role ?  Users.getUserRoleNumber(req.body.role) : null,
             status: req.body.status ? Users.getUserStatusNumber(req.body.status) : null,
 			institution: req.body.institution ? req.body.institution : null,
@@ -506,4 +530,101 @@ module.exports = {
         })
 
 	}),
+
+    updatePassword: (req, res) => {
+		let id = req.body.id;
+		let password = req.body.password;
+        let newPassword = req.body.newPassword;
+
+        Users.findOne({id})
+            .then(userFound => {
+                if(userFound) {
+                    return bcrypt.compare(escape(password), userFound.password)
+                }
+                throw new Error('Error!')
+
+            })
+            .then(isPasswordMatched => {
+                if(isPasswordMatched) {
+                    let hashedPassword = bcrypt.hashSync(newPassword, 10);
+                    return Users.update({ id: id }, { password: hashedPassword }).fetch();
+                }
+                else {
+                    let err = new Error('Your password does not match!');
+                    err.isCustomError = true;
+                    throw err
+                }
+            })
+            .then(result => {
+                return res.json({
+                    status: 'success',
+                    message: 'Update password successfully!'
+                }) 
+			})
+            .catch(error => {
+                if(error.isCustomError) {
+                    return res.json({
+                        status: 'error',
+                        message: error.message
+                    })
+                }
+                else {
+                    console.log(error);
+                    return res.json({ status: 'error' })
+                }
+            }) 
+	},
+
+    updateUserProfile: (req, res) => {
+        let id = req.body.id
+        let userUpdated = {
+            email: req.body.email,
+			first_name: req.body.first_name,
+			last_name: req.body.last_name,
+            phone_number: req.body.phone_number ? req.body.phone_number : null,
+			institution: req.body.institution ? req.body.institution : null,
+			group: req.body.group ? req.body.group : null
+		}
+
+        Users.findOne({id})
+            .then(userMatch => {
+                return Users.findOne({ and: [{email: req.body.email}, { email: { '!=': userMatch.email }}] })
+            })
+            .then(userFound => {
+                if(userFound) {
+                    let err = new Error('Email already existed!');
+                    err.isCustomError = true;
+                    throw err
+                }
+                else if(req.body.first_name && req.body.last_name && req.body.email) {
+                    return Users.update({id: id}, userUpdated).fetch()
+                }
+                else {
+                    let err = new Error('You must fill all required fields!');
+                    err.isCustomError = true;
+                    throw err
+                }
+            })
+            .then(data => {
+                return res.json({
+                    status: 'success',
+                    message: 'Updated successfully!'
+                })
+            })
+			.catch(error => {
+				if(error.isCustomError) {
+                    return res.json({
+                        status: 'error',
+                        message: error.message
+                    })
+                }
+                else {
+                    console.log(error);
+                    return res.json({ status: 'error' })
+                }
+			})
+    },
+
+
+
 }

@@ -39,6 +39,10 @@
 			type: 'number',
 			allowNull: true
 		},
+		phone_number: {
+			type: 'string',
+			allowNull: true
+		},
 		institution: {
 			type: 'string',
 			allowNull: true
