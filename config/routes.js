@@ -69,7 +69,7 @@ module.exports.routes = {
 	'POST /users/setPasswordUser': 'UsersController.setPasswordUser',
 	'POST /users/updatePassword': 'UsersController.updateForgotPassword',
 	'POST /users/forgotPassword': 'UsersController.forgotPassword',
-	'POST /users/updatePassword': 'UsersController.updatePassword',
+	'POST /users/updatePasswordProfile': 'UsersController.updatePassword',
 	'GET /users/getUserById/:id': 'UsersController.getUserById',
 	'POST /users/updateUserProfile': 'UsersController.updateUserProfile',
 
