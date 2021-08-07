@@ -12,6 +12,7 @@ const sqlString = require('sqlstring');
 const moment = require('moment');
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport(sails.config.SMTP_HOST);
+const exec = require('child_process').exec;
 
 module.exports = {
     login: (req,res) => {
@@ -237,18 +238,30 @@ module.exports = {
             })
             .then(user => {
                 if (user) {
+                    let promises = [];
                     let url = `${sails.config.front_end.host}/auth/set-password/${user.id}`;
+                    let userfile = `${sails.config.mountFolder}/${sails.config.userFolder}/${user.id}`;
+                    let command = `mkdir -p ${userfile} && mkdir -p ${userfile}/uploads `;
                     let mailOptions = {
                         from: sails.config.SMTP_HOST.from,
                         to: user.email,
-                        subject: 'Notification',
+                        subject: 'Set Password',
                         html: `Hi there,<br>
                             Click the link below to set your password:
                             <br>${url}<br>
                             Thanks,<br>
                             Mycovscan`
                     };
-                    return transporter.sendMail(mailOptions);
+                    promises.push(transporter.sendMail(mailOptions))
+                    promises.push(new Promise((resolve, reject) => {
+                        exec(command, (err, stdout, stderr) => {
+                            if (err) {
+                                return reject(err)
+                            }
+                            return resolve()
+                        })
+                    }))
+                    return Promise.all(promises)
                 }
                 else {
                     let err = new Error('Error!');
@@ -257,6 +270,7 @@ module.exports = {
                 }
             })
             .then(data => {
+                console.log(data)
                 return res.json({
                     status: 'success',
                     message: 'Created user successfully!'

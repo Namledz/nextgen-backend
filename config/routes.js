@@ -73,6 +73,11 @@ module.exports.routes = {
 	'GET /users/getUserById/:id': 'UsersController.getUserById',
 	'POST /users/updateUserProfile': 'UsersController.updateUserProfile',
 
+	
+	// UploadController
+	
+	'POST /signed_url': 'UploadController.getSignedAuth',
+	'POST /uploadFileInfor': 'UploadController.uploadFileInfor',
 
 
 	/***************************************************************************
