@@ -60,6 +60,11 @@
 			columnType: 'timestamp',
 			autoUpdatedAt: true
 		}
+	},
+
+
+	file_types: {
+		LIST : ['vcf','fastq']
 	}
 };
 

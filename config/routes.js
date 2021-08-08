@@ -78,6 +78,9 @@ module.exports.routes = {
 	
 	'POST /signed_url': 'UploadController.getSignedAuth',
 	'POST /uploadFileInfor': 'UploadController.uploadFileInfor',
+	'POST /upload': 'UploadController.find',
+	'DELETE /upload/deleteUploadFile/:id': 'UploadController.deleteUploadFile',
+	'GET /upload/getListWorkspace': 'UploadController.getListWorkspace'
 
 
 	/***************************************************************************
