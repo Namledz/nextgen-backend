@@ -33,6 +33,7 @@ module.exports.routes = {
 	'POST /getGeneDetail': 'VariantController.getGeneDetail',
 	'POST /getSeletedVariants/:id': 'VariantController.getSeletedVariants',
 	'POST /getSeletedVariants/:id/createReport': 'VariantController.createReport',
+	'POST /getSeletedVariants/:id/exportReport': 'VariantController.exportReport',
 	'GET /analysis/get-igv-info/:id' : 'VariantController.getIgvInfo',
 	'POST /analysis/list/:id' : 'AnalysisController.list',
 	'POST /workspaces/list' : 'WorkspacesController.listWorkspaces',

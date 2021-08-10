@@ -9,6 +9,29 @@ AWS.config.region = 'us-west-2';
 
 
 module.exports = {
+
+	generateUrl: function (key) {
+		if(key) {
+			let s3 = new AWS.S3();
+			let params = {
+				Bucket: sails.config.AWS_BUCKET,
+				Key: key,
+				Expires: 604800
+			}
+			return new Promise(function (resolve, reject) {
+				s3.getSignedUrl('getObject', params, function (err, url) {
+					if (err) {
+						console.log(err)
+						return reject(err);
+					} else {
+						return resolve(url); // successful response
+					}
+				})
+			});
+		}
+		return null
+	},
+
 	/**
 	  * Delete object
 	  * @param  {string} key

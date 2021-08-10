@@ -7,12 +7,12 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const mongo = sails.config.MONGO;
-var mongodb = require('mongodb');
-var crypto = require("crypto");
 const numeral = require('numeral')
 const moment = require('moment');
-
+const randomstring = require("randomstring")
+const fs = require('fs');
+const exec = require('child_process').exec;
+const Promise = require('bluebird');
 
 module.exports = {
 	variant: (req, res) => {
@@ -420,6 +420,111 @@ module.exports = {
 				console.log(err);
 				return res.json({ status: 'error', message: "Unkown error" })
 			})
-	}
+	},
+
+	exportReport: (req, res) => {
+        let name = 'REPORT_' + randomstring.generate({ charset: 'numeric', length: 14 })
+		let htmlFilePath = `${sails.config.mountFolder}/${sails.config.exportFolder}/${name}.html`;
+		let exportFilePath = `${sails.config.mountFolder}/${sails.config.exportFolder}/${name}.pdf`;
+        let header = req.body.header;
+        let contentBody = req.body.contentBody;
+		let footer = req.body.footer;
+        let headerFilePath =`${sails.config.mountFolder}/${sails.config.exportFolder}/${name}_header.html`;
+        let footerFilePath = `${sails.config.mountFolder}/${sails.config.exportFolder}/${name}_footer.html`;
+
+        let command;
+        if( header != null && footer != null) {
+            command = 'wkhtmltopdf --page-size "Letter" --encoding "UTF-8"' + ' --header-html ' + headerFilePath + ' --footer-html ' + footerFilePath + ' ' + htmlFilePath + ' ' + exportFilePath
+        }
+        else {
+			command = 'wkhtmltopdf --page-size "Letter" --encoding "UTF-8" -R 7.9mm -L 6.5mm -T 12.7mm -B 10.6mm ' + htmlFilePath + ' ' + exportFilePath;
+        }
+		console.log(command)
+
+        let pattern = new RegExp('<grammarly-extension.*?>(.*?)<\\/grammarly-extension>','igm');
+		let new_contentBody = contentBody.replace(pattern, '');
+
+        return new Promise(function (resolve, reject) {
+            sails.renderView( 'pages/templates/report/template' , {template: new_contentBody, layout : false}, function (err, view) {
+                if (err) {
+                    return reject(err)
+                }
+                return resolve(view)
+            })
+        })
+        .then(view => {
+            if(view) {
+                let promises = [];
+                let promise1 = new Promise(function (resolve, reject) {
+                    fs.writeFile(htmlFilePath, view, function (err) {
+                        if (err) {
+                            return reject(err)
+                        }
+                        else {
+                            return resolve()
+                        }
+                    })
+                })
+                promises.push(promise1)
+                let promise2 = new Promise(function (resolve, reject) {
+                    fs.writeFile(headerFilePath, header, function (err) {
+                        if (err) {
+                            return reject(err)
+                        }
+                        else {
+                            return resolve()
+                        }
+                    })
+                })
+                promises.push(promise2)
+                let promise3 = new Promise(function (resolve, reject) {
+                    fs.writeFile(footerFilePath, footer, function (err) {
+                        if (err) {
+                            return reject(err)
+                        }
+                        else {
+                            return resolve()
+                        }
+                    })
+                })
+                promises.push(promise3)
+                return Promise.all(promises) 
+            }
+            else {
+                let err = new Error('Generate Report Error!');
+                err.isCustomError = true;
+                throw err
+            }
+        })
+        .then(function (data) {
+            return new Promise(function (resolve, reject) {
+                exec(command, function (err, stdout, stderr) {
+                    if (err) {
+                        return reject(err)
+                    }
+                    return resolve()
+                })
+            })
+        })
+        .then(function (data) {
+            let urlDownload = `${sails.config.exportFolder}/${name}.pdf`;
+            return s3Service.generateUrl(urlDownload)
+        })
+        .then(url => {
+            return res.json({ status: "success", message: "Export Successfully!", url: url})
+        })
+		.catch(error => {
+			if(error.isCustomError) {
+				return res.json({
+					status: 'error',
+					message: error.message
+				})
+			}
+			else {
+				console.log(error);
+				return res.json({ status: 'error' })
+			}
+		})
+    },
 };
 
