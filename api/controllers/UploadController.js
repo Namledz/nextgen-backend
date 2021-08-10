@@ -99,7 +99,7 @@ module.exports = {
 		let sqlSearchTerm = sqlString.escape('%' + searchTerm + '%')
 
 		if (searchTerm != '') {
-			searchFilter = ` AND ( u.upload_name LIKE ${sqlSearchTerm}
+			searchFilter = ` AND ( u.sample_name LIKE ${sqlSearchTerm}
 				OR u.file_type LIKE ${sqlSearchTerm}
 				OR w.name LIKE ${sqlSearchTerm}
 				)`
