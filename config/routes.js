@@ -73,6 +73,10 @@ module.exports.routes = {
 	'POST /users/updatePasswordProfile': 'UsersController.updatePassword',
 	'GET /users/getUserById/:id': 'UsersController.getUserById',
 	'POST /users/updateUserProfile': 'UsersController.updateUserProfile',
+	
+	// Vep Controller
+	'GET /vep/get-pending-sample': 'VepController.getPendingSample',
+	'/vep/update-sample-status/:status': 'VepController.updateSampleStatus',
 
 	
 	// UploadController
@@ -82,6 +86,7 @@ module.exports.routes = {
 	'POST /upload': 'UploadController.find',
 	'DELETE /upload/deleteUploadFile/:id': 'UploadController.deleteUploadFile',
 	'GET /upload/getListWorkspace': 'UploadController.getListWorkspace'
+
 
 
 	/***************************************************************************

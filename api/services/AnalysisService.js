@@ -90,5 +90,35 @@ module.exports = {
 		})
 
 		return [mapValue, keys];
+	},
+
+	getAnalysisStatus: (status) => {
+		switch(status) {
+			case Analysis.statuses.QUEUING: 
+				return 'Queuing'
+			case Analysis.statuses.ANALYZING:
+			case Analysis.statuses.VEP_ANALYZED:
+				return 'Analyzing'
+			case Analysis.statuses.ANALYZED:
+				return 'Analyzed'
+			case Analysis.statuses.ERROR:
+				return 'Error';
+			default:
+				return 'Queuing'
+		}
+	},
+
+	createAnalysis: async (analysis) => {
+		let result = await Analysis.create(analysis).fetch();
+
+		let upload = await Uploads.findOne({ id: analysis.upload_id });
+
+		let destination = `${sails.config.userFolder}/${result.user_id}/${result.id}/${upload.upload_name}`
+		let source = upload.file_path
+
+		let copyVcfFile = await s3Service.copyObject(source, destination)
+
+		return copyVcfFile;
+
 	}
 }

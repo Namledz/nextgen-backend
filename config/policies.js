@@ -31,6 +31,10 @@ module.exports.policies = {
 		'createUser': ['auth', 'adminAuth'],
 		'login': true,
 		'logout': ['auth']
+	},
+
+	VepController: {
+		'*': true
 	}
 
 };

@@ -75,5 +75,33 @@ module.exports = {
 				}
 			});
 		})
-	}
+	},
+
+	/**
+ * Copy object
+ * @param  {string} copySource
+ * @param  {string} key
+ * @return {Promise}
+ */
+	copyObject: function (copySource, key) {
+		var s3 = new AWS.S3();
+		var params = {
+			Bucket: sails.config.AWS_BUCKET,
+			CopySource: sails.config.AWS_BUCKET + '/' + copySource,
+			Key: key
+		}
+
+		return new Promise(function (resolve, reject) {
+			console.log('start copyObject')
+			s3.copyObject(params, function (err, data) {
+				if (err) {
+					console.log(err);
+					return reject(err); // an error occurred
+				} else {
+					console.log('copyObject success');
+					resolve(copySource);          // successful response
+				}
+			});
+		});
+	},
 }
