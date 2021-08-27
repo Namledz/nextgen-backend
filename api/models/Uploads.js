@@ -23,7 +23,7 @@
 			allowNull: true
 		},
 		file_size: {
-			type: 'string',
+			type: 'number',
 			allowNull: true
 		},
 		file_type: {

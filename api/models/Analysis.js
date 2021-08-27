@@ -56,7 +56,6 @@
 		},
 		size: {
 			type: 'number',
-			columnType: 'decimal(15,2)',
 			allowNull: true
 		},
 		status: {

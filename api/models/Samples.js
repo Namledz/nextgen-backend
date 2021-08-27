@@ -15,7 +15,7 @@ module.exports = {
 			unique: true,
 			autoIncrement: true
 		},
-		user_uuid: {
+		user_id: {
 			type: 'number',
 		},
 		name: {
