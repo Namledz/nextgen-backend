@@ -106,7 +106,7 @@ module.exports = {
 				data.rows.forEach(e => {
 					e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
 					e.updatedAt = `${moment(e.updatedAt).format('MM/DD/YYYY')}`
-					e.analyzed = e.status != Analysis.statuses.analyzed ? '' : `${moment(e.analyzed).format('MM/DD/YYYY')}`
+					e.analyzed = e.status != Analysis.statuses.ANALYZED ? '' : `${moment(e.analyzed).format('MM/DD/YYYY')}`
 					e.status = AnalysisService.getAnalysisStatus(e.status);
 					e.size = e.size
 				})

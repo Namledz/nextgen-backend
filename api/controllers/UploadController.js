@@ -28,22 +28,25 @@ module.exports = {
         postFileInfor.file_path = `${sails.config.userFolder}/${user.id}/uploads/${postFileInfor.upload_name}`;
         postFileInfor.is_deleted = 0;
 
+		console.log(postFileInfor);
+
         return Uploads.create(postFileInfor).fetch()
             .then(data => {
                 if(data) {
-                    return res.json({
-                        status: 'success',
-                        message: 'Uploaded files successfully!'
-                    })
+					return SampleService.createSample(data)
                 }
                 else {
-                    let err = new Error('Error!');
-                    err.isCustomError = true;
-                    throw err
+                    throw ResponseService.customError('Error!');
                 }
             })
+			.then(sample => {
+				return res.json({
+					status: 'success',
+					message: 'Uploaded files successfully!'
+				})
+			})
             .catch(error => {
-				if(error.isCustomError) {
+				if (ResponseService.isCustomError(error)) {
                     return res.json({
                         status: 'error',
                         message: error.message
@@ -142,7 +145,7 @@ module.exports = {
 			.spread((data, count) => {
 				data.rows.forEach(e => {
 					e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
-					e.file_size = `${e.file_size} MB`
+					e.file_size = `${e.file_size}`
 				})
 				return res.json({
 					items: data.rows,

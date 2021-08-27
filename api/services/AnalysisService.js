@@ -90,5 +90,19 @@ module.exports = {
 		})
 
 		return [mapValue, keys];
+	},
+
+	getAnalysisStatus: (status) => {
+		switch(status) {
+			case Analysis.statuses.QUEUING: 
+			return 'Queuing'
+			case Analysis.statuses.ANALYZING:
+			case Analysis.statuses.VEP_ANALYZED:
+				return 'Analyzing'
+			case Analysis.statuses.ANALYZED:
+				return 'Analyzed'
+			default:
+				return 'Queuing'
+		}
 	}
 }

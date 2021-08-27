@@ -70,7 +70,7 @@ module.exports = {
 				return res.json({ items: data.rows, total: allData.length })
 			})
 			.catch(error => {
-                console.log(error);
+				console.log('Error-WorkspacesController@listWorkspaces:', error);
 				return res.json({ status: 'error' })
 			})
     },
