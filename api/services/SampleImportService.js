@@ -93,7 +93,7 @@ module.exports = {
     },
 
     onImportSuccess: function (analysis) {
-        return Analysis.updateOne({ id: analysis.id }, { status: Analysis.statuses.ANALYZED })
+        return Analysis.updateOne({ id: analysis.id }, { status: Analysis.statuses.ANALYZED, analyzed: new Date() })
     },
 
     onImportError: function (analysis) {
