@@ -65,6 +65,10 @@
 			type: 'string',
 			allowNull: true
 		},
+		upload_id: {
+			type: 'number',
+			allowNull: true
+		},
 		createdAt: {
 			type: 'ref',
 			columnType: 'timestamp',
@@ -78,8 +82,11 @@
 	},
 
 	statuses: {
+		QUEUING: 0,
+		ANALYZING: 1, 
 		ANALYZED: 2,
-		QUEUING: 1
+		ERROR: 3,
+		VEP_ANALYZED: 4,
 	}
 };
 

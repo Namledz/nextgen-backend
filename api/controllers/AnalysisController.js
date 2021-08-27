@@ -106,9 +106,9 @@ module.exports = {
 				data.rows.forEach(e => {
 					e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
 					e.updatedAt = `${moment(e.updatedAt).format('MM/DD/YYYY')}`
-					e.analyzed = `${moment(e.analyzed).format('MM/DD/YYYY')}`
-					e.status = e.status == 2 ? 'Analyzed' : 'Queuing'
-					e.size = e.size;
+					e.analyzed = e.status != Analysis.statuses.analyzed ? '' : `${moment(e.analyzed).format('MM/DD/YYYY')}`
+					e.status = AnalysisService.getAnalysisStatus(e.status);
+					e.size = e.size
 				})
 				return res.json({
 					items: data.rows,
