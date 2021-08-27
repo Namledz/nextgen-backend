@@ -95,12 +95,14 @@ module.exports = {
 	getAnalysisStatus: (status) => {
 		switch(status) {
 			case Analysis.statuses.QUEUING: 
-			return 'Queuing'
+				return 'Queuing'
 			case Analysis.statuses.ANALYZING:
 			case Analysis.statuses.VEP_ANALYZED:
 				return 'Analyzing'
 			case Analysis.statuses.ANALYZED:
 				return 'Analyzed'
+			case Analysis.statuses.ERROR:
+				return 'Error';
 			default:
 				return 'Queuing'
 		}
