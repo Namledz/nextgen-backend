@@ -98,6 +98,7 @@ module.exports = {
 				return 'Queuing'
 			case Analysis.statuses.ANALYZING:
 			case Analysis.statuses.VEP_ANALYZED:
+			case Analysis.statuses.IMPORTING:
 				return 'Analyzing'
 			case Analysis.statuses.ANALYZED:
 				return 'Analyzed'

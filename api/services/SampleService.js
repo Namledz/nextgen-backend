@@ -19,12 +19,16 @@ module.exports = {
 		let sample = await Analysis.find(query);
 
 		if (sample[0]) {
-			let updateSample = await Analysis.update({ id: sample[0].id }, { status: Analysis.statuses.ANALYZING })
 			let fileUploaded = await Uploads.findOne({ id: sample[0].upload_id });
-
+			let updateSample;
+			
 			if (!fileUploaded) {
 				updateSample = await Analysis.update({ id: sample[0].id }, { status: Analysis.statuses.ERROR })
 				throw ResponseService.customError('Sample Error!');
+			} else {
+				let uploadName = fileUploaded.upload_name.substring(0, fileUploaded.upload_name.lastIndexOf('.vcf'));
+				let filePath = `${sails.config.userFolder}/${sample[0].user_id}/${sample[0].id}/${uploadName}.anno`
+				updateSample = await Analysis.update({ id: sample[0].id }, { status: Analysis.statuses.ANALYZING, file_path: filePath })
 			}
 
 			let data = {
