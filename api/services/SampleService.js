@@ -33,7 +33,7 @@ module.exports = {
 			let data = {
 				id: sample[0].id,
 				bed_file: '',
-				file_path: fileUploaded.file_path,
+				file_path: `${sails.config.userFolder}/${sample[0].user_id}/${sample[0].id}/${fileUploaded.upload_name}`,
 				genome_build: 'hg19',
 				vcf_type: 'WGS',
 				user_id: sample[0].user_id,
@@ -67,7 +67,7 @@ module.exports = {
 					status: Analysis.statuses.QUEUING,
 					upload_id: fileUploaded.id
 				}
-				return Analysis.create(analysisData).fetch()
+				return AnalysisService.createAnalysis(analysisData)
 			})
 	}
 }

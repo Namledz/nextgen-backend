@@ -104,5 +104,19 @@ module.exports = {
 			default:
 				return 'Queuing'
 		}
+	},
+
+	createAnalysis: async (analysis) => {
+		let result = await Analysis.create(analysis).fetch();
+
+		let upload = await Uploads.findOne({ id: analysis.upload_id });
+
+		let destination = `${sails.config.userFolder}/${result.user_id}/${result.id}/${upload.upload_name}`
+		let source = upload.file_path
+
+		let copyVcfFile = await s3Service.copyObject(source, destination)
+
+		return copyVcfFile;
+
 	}
 }
