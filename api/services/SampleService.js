@@ -16,10 +16,7 @@ module.exports = {
 			limit: 1
 		}
 
-		console.log(123);
 		let sample = await Analysis.find(query);
-
-		console.log(sample);
 
 		if (sample[0]) {
 			let updateSample = await Analysis.update({ id: sample[0].id }, { status: Analysis.statuses.ANALYZING })
