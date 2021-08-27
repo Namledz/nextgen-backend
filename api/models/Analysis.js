@@ -69,6 +69,10 @@
 			type: 'number',
 			allowNull: true
 		},
+		file_path: {
+			type: 'string',
+			allowNull: true
+		},
 		createdAt: {
 			type: 'ref',
 			columnType: 'timestamp',
@@ -87,6 +91,11 @@
 		ANALYZED: 2,
 		ERROR: 3,
 		VEP_ANALYZED: 4,
+		IMPORTING: 5,
+	},
+
+	getMongoCollectionName: (analysisId) => {
+		return sails.config.MONGO.ANALYSIS_PREFIX + analysisId
 	}
 };
 
