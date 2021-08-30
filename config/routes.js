@@ -81,6 +81,8 @@ module.exports.routes = {
 	
 	// UploadController
 	
+	'POST /createMultipartUpload': 'UploadController.createMultipartUpload',
+	'POST /completeMultipartUpload': 'UploadController.completeMultipartUpload',
 	'POST /signed_url': 'UploadController.getSignedAuth',
 	'POST /uploadFileInfor': 'UploadController.uploadFileInfor',
 	'POST /upload': 'UploadController.find',

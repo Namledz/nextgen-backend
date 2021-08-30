@@ -4,16 +4,47 @@ const moment = require('moment');
 const sqlString = require('sqlstring');
 
 module.exports = {
-    getSignedAuth: (req, res) => {
+	createMultipartUpload: (req, res) => {
         let uploadName = req.body.uploadName;
-        let fileType = req.body.fileType;
-        let index = req.body.index;
+        let contentType = req.body.contentType;
         let user = req.user;
 
 		let designation = `${sails.config.userFolder}/${user.id}/uploads/${uploadName}`;
-        s3Service.getSignedUrl(designation, fileType)
+        s3Service.createMultipartUpload(designation, contentType)
             .then(result => {
-                return res.json({ status: 'success', preSignedUrl: result, index: index });
+                return res.json({ status: 'success', uploadId: result.UploadId });
+            }).catch(error => {
+                console.log("Error@UploadController-getSignedAuth: ", error);
+                return res.json({ error: 'error' });
+            })		
+	},
+
+    getSignedAuth: (req, res) => {
+        let uploadName = req.body.uploadName;
+        let partNumber = req.body.partNumber;
+		let uploadId = req.body.uploadId;
+        let user = req.user;
+
+		let designation = `${sails.config.userFolder}/${user.id}/uploads/${uploadName}`;
+        s3Service.getSignedUrl(designation, partNumber, uploadId)
+            .then(result => {
+                return res.json({ status: 'success', preSignedUrl: result });
+            }).catch(error => {
+                console.log("Error@UploadController-getSignedAuth: ", error);
+                return res.json({ error: 'error' });
+            })
+	},
+
+	completeMultipartUpload: (req, res) => {
+		let uploadName = req.body.uploadName;
+        let parts = req.body.parts;
+		let uploadId = req.body.uploadId;
+        let user = req.user;
+
+		let designation = `${sails.config.userFolder}/${user.id}/uploads/${uploadName}`;
+        s3Service.completeMultipartUpload(designation, parts, uploadId)
+            .then(result => {
+                return res.json({ status: 'success', result });
             }).catch(error => {
                 console.log("Error@UploadController-getSignedAuth: ", error);
                 return res.json({ error: 'error' });
@@ -27,8 +58,6 @@ module.exports = {
         postFileInfor.user_created = user.id;
         postFileInfor.file_path = `${sails.config.userFolder}/${user.id}/uploads/${postFileInfor.upload_name}`;
         postFileInfor.is_deleted = 0;
-
-		console.log(postFileInfor);
 
         return Uploads.create(postFileInfor).fetch()
             .then(data => {
