@@ -14,7 +14,7 @@ module.exports = {
             .then(result => {
                 return res.json({ status: 'success', uploadId: result.UploadId });
             }).catch(error => {
-                console.log("Error@UploadController-getSignedAuth: ", error);
+                console.log("Error@UploadController-createMultipartUpload: ", error);
                 return res.json({ error: 'error' });
             })		
 	},
@@ -46,7 +46,7 @@ module.exports = {
             .then(result => {
                 return res.json({ status: 'success', result });
             }).catch(error => {
-                console.log("Error@UploadController-getSignedAuth: ", error);
+                console.log("Error@UploadController-completeMultipartUpload: ", error);
                 return res.json({ error: 'error' });
             })
 	},
