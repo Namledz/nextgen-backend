@@ -433,7 +433,7 @@ module.exports = {
             .then(result => {
                 return res.json({
                     status: 'success',
-                    message: 'Your password has been set successfully. Admin will activate your account soon!'
+                    message: 'Your password has been set successfully!'
                 }) 
 			})
 			.catch(error => {
