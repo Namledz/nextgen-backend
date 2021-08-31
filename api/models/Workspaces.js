@@ -31,7 +31,7 @@ module.exports = {
 			allowNull: true
 		},
 		pipeline: {
-			type: 'string',
+			type: 'number',
 			allowNull: true
 		},
 		dashboard: {

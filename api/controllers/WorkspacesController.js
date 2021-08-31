@@ -29,7 +29,7 @@ module.exports = {
 			searchFilter = `WHERE ( workspace.name LIKE ${sqlSearchTerm}
 				OR workspace.last_modified LIKE ${sqlSearchTerm}
 				OR workspace.number LIKE ${sqlSearchTerm}
-                OR workspace.pipeline LIKE ${sqlSearchTerm} )`
+                OR p.name LIKE ${sqlSearchTerm} )`
 		}
 
 		let queryString = `
@@ -40,13 +40,14 @@ module.exports = {
                 workspace.number as number,
 				u.email as createdBy,
 				u.role,
-                workspace.pipeline	
+                CONCAT (p.name , ' ', p.version) as pipeline	
             FROM
                 workspace
 			LEFT JOIN
 				(SELECT COUNT(a.project_id) as total, a.project_id FROM analysis as a GROUP BY a.project_id) as t
 			ON workspace.id = t.project_id
 			LEFT JOIN users as u ON u.id = workspace.user_created_id
+			LEFT JOIN pipeline as p ON p.id = workspace.pipeline
 			${searchFilter}`
 
         let queryStringCount = queryString
@@ -100,6 +101,25 @@ module.exports = {
 			})
 	},
 
+	getListPipeline: (req,res) => {
+		let data = []
+		Pipelines.find()
+			.then(result => {
+				result.forEach(e => {
+					let detail = {
+						pipeline: `${e.name + ' ' + e.version}`,
+						id: e.id 
+					} 
+					data.push(detail)
+				})
+				return res.json({data})
+			})
+			.catch(error => {
+				console.log(error)
+				return res.json({status: 'error'})
+			})
+	},
+
 	updateWorkspaceDashboard: (req,res) => {
 		let data = req.body.data
 		let id = data.id
@@ -117,6 +137,45 @@ module.exports = {
 			.catch(error => {
 				console.log(error)
 				return res.json({status: 'error'})
+			})
+	},
+
+	createWorkspace: (req,res) => {
+		let data = {
+			name: req.body.name,
+			user_created_id: req.user.id,
+			pipeline: req.body.pipeline,
+			dashboard: req.body.dashboard,
+			number: 0,
+			last_modified: moment(Date.now()).format('YYYY-MM-DD hh:mm:ss')
+		}
+
+		Workspaces.findOne({ name: req.body.name})
+			.then(result => {
+				if (result) {
+					let err = new Error('Your workspace name is already existed!');
+                    err.isCustomError = true;
+                    throw err
+				}
+				return Workspaces.create(data).fetch()
+			})
+			.then(data => {
+				return res.json({
+					status: 'success',
+					message: 'Created workspace successfully !'
+				})
+			})
+			.catch(error => {
+				if(error.isCustomError) {
+                    return res.json({
+                        status: 'error',
+                        message: error.message
+                    })
+                }
+                else {
+                    console.log(error);
+                    return res.json({ status: 'error' })
+                }
 			})
 	}
 };
