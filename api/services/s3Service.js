@@ -56,7 +56,7 @@ module.exports = {
 		});
 	},
 
-	getSignedUrl: function (key, contentType) {
+	createMultipartUpload: function (key, contentType) {
 		let s3 = new AWS.S3();
 		let params = {
 			Bucket: sails.config.AWS_BUCKET,
@@ -67,7 +67,50 @@ module.exports = {
 		}
 
 		return new Promise(function (resolve, reject){
-			s3.getSignedUrl('putObject', params, function(err, data) {
+			s3.createMultipartUpload(params, function(err, data) {
+				if (err) {
+					return reject(err);
+				} else {
+					return resolve(data);
+				}
+			});
+		})
+	},
+
+	getSignedUrl: function (key, partNumber, uploadId) {
+		let s3 = new AWS.S3();
+		let params = {
+			Bucket: sails.config.AWS_BUCKET,
+			Expires: 60 * 60,
+			Key: key,
+			PartNumber: partNumber,
+			UploadId: uploadId
+		}
+
+		return new Promise(function (resolve, reject){
+			s3.getSignedUrl('uploadPart', params, function(err, data) {
+				if (err) {
+					return reject(err);
+				} else {
+					return resolve(data);
+				}
+			});
+		})
+	},
+
+	completeMultipartUpload: function (key, parts, uploadId) {
+		let s3 = new AWS.S3();
+		let params = {
+			Bucket: sails.config.AWS_BUCKET,
+			Key: key,
+			MultipartUpload: {
+				Parts: parts
+			},
+			UploadId: uploadId
+		}
+
+		return new Promise(function (resolve, reject){
+			s3.completeMultipartUpload(params, function(err, data) {
 				if (err) {
 					return reject(err);
 				} else {
