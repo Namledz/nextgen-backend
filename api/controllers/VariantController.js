@@ -30,7 +30,7 @@ module.exports = {
 
 
 		let db;
-		MongodbService.mongodbConnect()
+		return MongodbService.mongodbConnect()
 			.then(function (mdb) {
 				db = mdb;
 				let database = db.db('genomics');
@@ -47,6 +47,40 @@ module.exports = {
 					}
 				`
 
+				switch(filter.readDepthSign) {
+					case 'greater':
+						matchAnd.push({ readDepth: { $gte: filter.readDepth } })
+						break;
+					case 'lower':
+						matchAnd.push({ readDepth: { $lte: filter.readDepth } })
+						break;
+					default:
+						matchAnd.push({ readDepth: { $gte: 10 } })
+				}
+
+				switch(filter.AFSign) {
+					case 'greater':
+						matchAnd.push({ alleleFrequency: { $gte: filter.alleleFraction } })
+						break;
+					case 'lower':
+						matchAnd.push({ alleleFrequency: { $lte: filter.alleleFraction } })
+						break;
+					default:
+						matchAnd.push({ alleleFrequency: { $gte: 0.2 } })
+				}
+
+				switch(filter.gnomAdSign) {
+					case 'greater':
+						matchAnd.push({ gnomAD_exome_ALL: { $gt: filter.gnomAd } })
+						break;
+					case 'lower':
+						matchAnd.push({ gnomAD_exome_ALL: { $lt: filter.gnomAd } })
+						break;
+					default:
+						matchAnd.push({ gnomAD_exome_ALL: { $gt: 0 } })
+				}
+
+
 				if (filter.chrom) {
 					matchAnd.push({ chrom: { "$in": filter.chrom } })
 				}
@@ -59,22 +93,6 @@ module.exports = {
 				if (filter.classification) {
 					matchAnd.push({ CLINSIG_FINAL: { "$in": filter.classification } })
 				}
-				if (filter.alleleFraction) {
-					matchAnd.push({ alleleFrequency: filter.alleleFraction })
-				}
-				if (filter.gnomADfrom) {
-					matchAnd.push({ gnomAD_exome_ALL: { $gte: filter.gnomADfrom } })
-				}
-				if (filter.gnomADto) {
-					matchAnd.push({ gnomAD_exome_ALL: { $lte: filter.gnomADto } })
-				}
-				if (filter.depth_greater) {
-					matchAnd.push({ readDepth: { $gte: filter.depth_greater } })
-				}
-				if (filter.depth_lower) {
-					matchAnd.push({ readDepth: { $lte: filter.depth_lower } })
-				}
-
 				if (filter.function) {
 					matchAnd.push({ codingEffect: filter.function })
 				}
