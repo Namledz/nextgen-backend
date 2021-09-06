@@ -217,7 +217,7 @@ module.exports = {
 				a.name as analyses_name,
 				w.name as workspace_name,
 				a.status
-			FROM analyses_list as a
+			FROM analyses-list as a
 			LEFT JOIN workspace as w
 			ON a.project_id = w.id
 			WHERE
