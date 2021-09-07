@@ -92,7 +92,12 @@ module.exports.routes = {
 	'POST /uploadFileInfor': 'UploadController.uploadFileInfor',
 	'POST /upload': 'UploadController.find',
 	'DELETE /upload/deleteUploadFile/:id': 'UploadController.deleteUploadFile',
-	'GET /upload/getListWorkspace': 'UploadController.getListWorkspace'
+	'GET /upload/getListWorkspace': 'UploadController.getListWorkspace',
+
+	// FilterController
+	'POST /filter/save': 'FilterController.save',
+	'POST /filter/load': 'FilterController.load',
+	'POST /filter/getFilters': 'FilterController.getFilters',
 
 
 

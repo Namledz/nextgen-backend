@@ -35,6 +35,10 @@ module.exports.policies = {
 
 	VepController: {
 		'*': true
+	},
+
+	FilterController: {
+		'*': ['auth']
 	}
 
 };

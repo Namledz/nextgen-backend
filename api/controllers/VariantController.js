@@ -47,16 +47,16 @@ module.exports = {
 					}
 				`
 
-				if (filter.chrom) {
+				if (filter.chrom && filter.chrom.length > 0) {
 					matchAnd.push({ chrom: { "$in": filter.chrom } })
 				}
-				if (filter.gene) {
+				if (filter.gene && filter.gene.length > 0) {
 					matchAnd.push({ gene: { "$in": filter.gene } })
 				}
-				if (filter.annotation) {
+				if (filter.annotation && filter.annotation.length > 0) {
 					matchAnd.push({ codingEffect: { "$in": filter.annotation } })
 				}
-				if (filter.classification) {
+				if (filter.classification && filter.classification.length > 0) {
 					matchAnd.push({ CLINSIG_FINAL: { "$in": filter.classification } })
 				}
 				if (filter.alleleFraction) {
