@@ -6,7 +6,7 @@
  */
 
  module.exports = {
-	tableName: 'analyses-list',
+	tableName: 'analyses_list',
 	primaryKey: 'id',
 	attributes: {
 		id: {
