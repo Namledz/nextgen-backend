@@ -70,7 +70,8 @@ module.exports = {
 			ON s.id = a.sample_id
 			LEFT JOIN workspace as w
 			ON a.project_id = w.id
-			WHERE a.project_id = ${id}
+			WHERE a.is_deleted = 0
+			AND a.project_id = ${id}
 		`
 
 		let queryStringFind = `
@@ -232,6 +233,22 @@ module.exports = {
 					total: 0
 				})
 			})
+	},
+
+	deleteAnalysis: (req,res) => {
+		let id = req.params.id
+
+		return Analysis.update({id}, {is_deleted: 1})
+        .then(result => {
+            return res.json({
+                status: 'success',
+                message: 'Deleted successfully!'
+            })
+        })
+        .catch(error => {
+            console.log(error)
+            return res.json({ status: 'error' })
+        })
 	}
 };
 

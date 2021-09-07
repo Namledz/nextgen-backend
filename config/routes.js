@@ -36,6 +36,7 @@ module.exports.routes = {
 	'POST /getSeletedVariants/:id/exportReport': 'VariantController.exportReport',
 	'GET /analysis/get-igv-info/:id' : 'VariantController.getIgvInfo',
 	'POST /analysis/list/:id' : 'AnalysisController.list',
+	'DELETE /analysis/deleteAnalysis/:id' : 'AnalysisController.deleteAnalysis',
 	'POST /workspaces/list' : 'WorkspacesController.listWorkspaces',
 	'POST /getLineageDetail' : 'SarcovController.getLineageDetail',
 
