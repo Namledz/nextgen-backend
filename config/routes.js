@@ -55,6 +55,8 @@ module.exports.routes = {
 	'GET /workspaces/getPipeline': 'WorkspacesController.getListPipeline',
 	'POST /workspaces/createWorkspace': 'WorkspacesController.createWorkspace',
 	'POST /workspaces/update': 'WorkspacesController.updateWorkspaceDashboard',
+	'POST /workspaces/search': 'WorkspacesController.search',
+	'DELETE /workspaces/deleteWorkspace/:id': 'WorkspacesController.deleteWorkspace',
 
 	// UsersController
 
