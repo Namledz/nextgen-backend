@@ -1,12 +1,12 @@
 /**
- * Users.js
+ * PatientsInformation.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
- module.exports = {
-	tableName: 'uploads',
+module.exports = {
+	tableName: 'patients_information',
 	primaryKey: 'id',
 	attributes: {
 		id: {
@@ -14,37 +14,23 @@
 			unique: true,
 			autoIncrement: true
 		},
-		original_name: {
+		first_name: {
 			type: 'string',
-			allowNull: true
 		},
-		sample_name: {
+		last_name: {
 			type: 'string',
+		},
+		dob: {
+			type: 'ref',
+			columnType: 'timestamp',
+		},
+		phenotype: {
+            type: 'string',
+			columnType: 'text',
 			allowNull: true
 		},
-		file_size: {
-			type: 'number',
-			allowNull: true
-		},
-		file_type: {
-			type: 'string',
-			allowNull: true
-		},
-		upload_name: {
-			type: 'string',
-			allowNull: true
-		},
-        is_deleted: {
-			type: 'number',
-			allowNull: true
-		},
-		file_path: {
-			type: 'string',
-			allowNull: true
-		},
-		user_created: {
-			type: 'number',
-			allowNull: true
+		upload_id: {
+            type: 'number'
 		},
 		createdAt: {
 			type: 'ref',
@@ -56,11 +42,7 @@
 			columnType: 'timestamp',
 			autoUpdatedAt: true
 		}
-	},
-
-
-	file_types: {
-		LIST : ['vcf','fastq']
 	}
+
 };
 

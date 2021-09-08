@@ -57,18 +57,5 @@ module.exports = {
 		}
 
 		return Samples.create(data).fetch()
-			.then(sample => {
-				let analysisData = {
-					user_id: sample.user_id,
-					name: sample.name,
-					sample_id: sample.id,
-					project_id: fileUploaded.workspace,
-					p_type: fileUploaded.file_type,
-					size: fileUploaded.file_size,
-					status: Analysis.statuses.QUEUING,
-					upload_id: fileUploaded.id
-				}
-				return AnalysisService.createAnalysis(analysisData)
-			})
 	}
 }

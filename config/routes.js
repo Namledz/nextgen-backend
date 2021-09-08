@@ -40,6 +40,8 @@ module.exports.routes = {
 	'POST /getLineageDetail' : 'SarcovController.getLineageDetail',
 
 	'GET /workspaces/get-workspace-name': 'WorkspacesController.getProjectName',
+    'GET /analysis/getSamplesByProjectId': 'AnalysisController.getSamplesByProjectId',
+    'POST /analysis/createAnalysis': 'AnalysisController.createAnalysis',
 
 	//SamplesController
 	'POST /samples/list': 'SamplesController.list',
