@@ -55,24 +55,43 @@ module.exports = {
         let postFileInfor = req.body;
         let user = req.user;
 
-        postFileInfor.user_created = user.id;
-        postFileInfor.file_path = `${sails.config.userFolder}/${user.id}/uploads/${postFileInfor.upload_name}`;
-        postFileInfor.is_deleted = 0;
+        let uploadInfor = {
+            original_name: postFileInfor.original_name,
+            sample_name: postFileInfor.sample_name,
+            file_size: postFileInfor.file_size,
+            file_type: postFileInfor.file_type,
+            upload_name: postFileInfor.upload_name,
+            user_created: user.id,
+            file_path: `${sails.config.userFolder}/${user.id}/uploads/${postFileInfor.upload_name}`,
+            is_deleted: 0
+        }
 
-        return Uploads.create(postFileInfor).fetch()
+        return Uploads.create(uploadInfor).fetch()
             .then(data => {
                 if(data) {
-					return SampleService.createSample(data)
+                    let patientInfor = {
+                        first_name: postFileInfor.first_name,
+                        last_name: postFileInfor.last_name,
+                        dob: postFileInfor.dob,
+                        phenotype: postFileInfor.phenotype,
+                        upload_id: data.id
+                    }
+					return PatientsInformation.create(patientInfor).fetch()
                 }
                 else {
                     throw ResponseService.customError('Error!');
                 }
             })
-			.then(sample => {
-				return res.json({
-					status: 'success',
-					message: 'Uploaded files successfully!'
-				})
+			.then(patient => {
+                if(patient) {
+                    return res.json({
+                        status: 'success',
+                        message: 'Uploaded files successfully!'
+                    })
+                }
+                else {
+                    throw ResponseService.customError('Patient information creation failed!');
+                }
 			})
             .catch(error => {
 				if (ResponseService.isCustomError(error)) {
@@ -83,9 +102,10 @@ module.exports = {
                 }
                 else {
                     console.log(error);
-                    return res.json({ status: 'error' })
+                    return res.json({ status: 'error', message: 'Unkown Error!' })
                 }
 			})
+
     },
 
 
@@ -105,16 +125,12 @@ module.exports = {
 		let sortField = ''
 
 		let type = filter.type ? filter.type : Uploads.file_types.LIST
-		let workspace = filter.workspace ? filter.workspace : []
 
 
 		switch (column) {
 			case 'name':
 				sortField = `u.sample_name ${direction}`
 				break;
-            case 'workspace':
-                sortField = `w.name ${direction}`
-                break;
             case 'type':
                 sortField = `u.file_type ${direction}`
                 break;
@@ -138,12 +154,9 @@ module.exports = {
 		}
 
 		let queryString = `
-			LEFT JOIN workspace as w
-			ON u.workspace = w.id
 			WHERE
 				u.is_deleted = 0
 			AND u.file_type IN ( ${sqlString.escape(type)} )
-			${workspace.length > 0 ? `AND w.id IN ( ${sqlString.escape(workspace)} )`: ``} 
 			AND u.user_created = ${sqlString.escape(req.user.id)}
 			${searchFilter}
 		`
@@ -152,7 +165,6 @@ module.exports = {
 			SELECT
 				u.id,
 				u.sample_name,
-				w.name as workspace_name,
 				u.file_type,
 				u.file_size,
 				u.createdAt
@@ -209,32 +221,6 @@ module.exports = {
 			.catch(error => {
 				console.log(error)
                 return res.json({ status: 'error' })
-			})
-	},
-
-	getListWorkspace: (req,res) => {
-		let queryString = `
-			SELECT DISTINCT
-				w.id,
-				w.name
-			FROM 
-				workspace as w
-			LEFT JOIN uploads as u
-			ON w.id = u.workspace
-			WHERE 
-				u.is_deleted = 0
-			AND u.user_created = ${sqlString.escape(req.user.id)}
-			ORDER BY 
-				w.id ASC	
-		`
-
-		Workspaces.getDatastore().sendNativeQuery(queryString)
-			.then(result => {
-				let data = result.rows
-				return res.json(data)
-			})
-			.catch(error => {
-				return res.json(error)
 			})
 	}
 

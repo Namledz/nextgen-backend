@@ -38,10 +38,12 @@
 			allowNull: true
 		},
 		sample_id: {
-			type: 'number'
+			type: 'number',
+            allowNull: true
 		},
 		project_id: {
-			type: 'number'
+			type: 'number',
+            allowNull: true
 		},
 		p_type: {
 			type: 'string',
@@ -86,7 +88,15 @@
 			type: 'ref',
 			columnType: 'timestamp',
 			autoUpdatedAt: true
-		}
+		},
+        description: {
+            type: 'string',
+			columnType: 'text',
+			allowNull: true
+        },
+        pipeline_id: {
+            type: 'number'
+        }
 	},
 
 	statuses: {
