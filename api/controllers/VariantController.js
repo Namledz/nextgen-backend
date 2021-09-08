@@ -529,7 +529,7 @@ module.exports = {
 
 	exportVariants: (req, res) => {
 		const variants = req.body.data
-		const name = 'LIST' + randomstring.generate({ charset: 'numeric', length: 10 })
+		const name = 'LIST_' + randomstring.generate({ charset: 'numeric', length: 10 })
 		const exportFilePath = `${sails.config.mountFolder}/${sails.config.exportFolder}/${name}.tsv`;
 		const urlDownload = `${sails.config.exportFolder}/${name}.tsv`;
 
