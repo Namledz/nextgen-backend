@@ -14,7 +14,7 @@ module.exports = {
         const user = req.user;
         const { name, filter_string } = req.body.data
 
-        return Filter.findOne({name, user_id: user.id})
+        return Filter.findOne({ name, user_id: user.id, is_deleted: 0})
         .then(filter => {
             if(filter) {
                 // return Filter.updateOne({id: filter.id}, { filter_string })
@@ -47,7 +47,7 @@ module.exports = {
         const user = req.user
         const name = req.body.name
 
-        return Filter.findOne({ name, user_id: user.id })
+        return Filter.findOne({ name, user_id: user.id, is_deleted: 0 })
         .then(filter => {
             if(!filter) {
                 throw ResponseService.customError('Can not found filter!');
@@ -70,10 +70,40 @@ module.exports = {
         })
     },
 
+    delete: (req, res) => {
+        const user = req.user
+        const name = req.body.name
+
+        return Filter.findOne({ name, user_id: user.id })
+            .then(filter => {
+                if (!filter) {
+                    throw ResponseService.customError('Can not found filter!');
+                }
+
+                return Filter.updateOne({id: filter.id}, { is_deleted: 1 })
+            })
+            .then(result => {
+                return res.json({ status: 'success', message: 'Delete filter successfully!' });
+            })
+            .catch(error => {
+                if (ResponseService.isCustomError(error)) {
+                    return res.json({
+                        status: 'error',
+                        message: error.message,
+                        filter: null
+                    })
+                }
+                else {
+                    console.log(error);
+                    return res.json({ status: 'error', message: 'Unknown error!' })
+                }
+            })
+    },
+
     getFilters: (req, res) => {
         const user = req.user
 
-        return Filter.find({user_id: user.id})
+        return Filter.find({ user_id: user.id, is_deleted: 0})
         .then(filters => {
             if(!filters) {
                 throw ResponseService.customError('Can not found any filter!');

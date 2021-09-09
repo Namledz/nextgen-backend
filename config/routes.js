@@ -101,6 +101,7 @@ module.exports.routes = {
 	'POST /filter/save': 'FilterController.save',
 	'POST /filter/load': 'FilterController.load',
 	'POST /filter/getFilters': 'FilterController.getFilters',
+	'POST /filter/delete': 'FilterController.delete',
 
 
 
