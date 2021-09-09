@@ -38,7 +38,7 @@ module.exports = {
                 workspace.id, 
                 workspace.name, 
                 workspace.last_modified as lastModified, 
-                workspace.number as number,
+                (SELECT SUM(variants) FROM analysis WHERE project_id = workspace.id) as number,
 				u.email as createdBy,
 				u.role,
                 CONCAT (p.name , ' ', p.version) as pipeline	
@@ -68,7 +68,8 @@ module.exports = {
 			.then((data) => {
                 data.rows.forEach(e => {
                     e.lastModified = e.lastModified ? `${moment(e.lastModified).format('MM/DD/YYYY')}` :  '';
-					e.access = e.role == 1 ? 'Owner' : 'Reader'
+					e.access = e.role == 1 ? 'Owner' : 'Reader',
+					e.number = e.number ? e.number : 0
 				});
 				return res.json({ items: data.rows, total: allData.length })
 			})
