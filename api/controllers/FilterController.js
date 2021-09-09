@@ -17,7 +17,8 @@ module.exports = {
         return Filter.findOne({name, user_id: user.id})
         .then(filter => {
             if(filter) {
-                return Filter.updateOne({id: filter.id}, { filter_string })
+                // return Filter.updateOne({id: filter.id}, { filter_string })
+                throw ResponseService.customError("Filter's name is already taken!");
             }
             return Filter.create({
                 name,
@@ -29,8 +30,16 @@ module.exports = {
             return res.json({ status: 'success', message: 'Save filter successfully!' });
         })
         .catch(error => {
-            console.log("Error@FilterController-create: ", error);
-            return res.json({ status: 'error', error });
+            if (ResponseService.isCustomError(error)) {
+                return res.json({
+                    status: 'error',
+                    message: error.message,
+                })
+            }
+            else {
+                console.log("Error@FilterController-create: ", error);
+                return res.json({ status: 'error', filter: null })
+            }
         })
     },
 
