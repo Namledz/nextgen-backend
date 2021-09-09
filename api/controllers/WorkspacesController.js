@@ -282,6 +282,59 @@ module.exports = {
 				console.log(error)
 				return res.json({ status: 'error' })
 			})
+	},
+
+	getWorkspaceById: (req,res) => {
+		let id = req.params.id
+
+		return Workspaces.findOne(id)
+			.then(result => {
+				return res.send(result)
+			})
+			.catch(error => {
+				console.log(error)
+				return res.json({ status: 'error' })
+			})
+	},
+
+	updateWorkspace: (req,res) => {
+		let id = req.body.id
+		let data = {
+			name: req.body.name,
+			pipeline: req.body.pipeline,
+			dashboard: req.body.dashboard
+		}
+
+		return Workspaces.findOne(id)
+			.then(data => {
+				return Workspaces.findOne({ and: [{name: req.body.name}, {name: {'!=': data.name}}] })
+			})
+			.then(result => {
+				if (result) {
+					let err = new Error('Name is already existed!');
+                    err.isCustomError = true;
+                    throw err
+				}
+				return Workspaces.update({id: req.body.id}, data).fetch()
+			})
+			.then(workspace => {
+				return res.json({
+					status: 'success',
+					message: 'Updated Successfully !'
+				})
+			})
+			.catch(error => {
+				if(error.isCustomError) {
+                    return res.json({
+                        status: 'error',
+                        message: error.message
+                    })
+                }
+                else {
+                    console.log(error);
+                    return res.json({ status: 'error' })
+                }
+			})
 	}
 };
 

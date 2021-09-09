@@ -42,6 +42,8 @@ module.exports.routes = {
 	'POST /getLineageDetail' : 'SarcovController.getLineageDetail',
 
 	'GET /workspaces/get-workspace-name': 'WorkspacesController.getProjectName',
+	'GET /workspaces/getWorkspaceById/:id': 'WorkspacesController.getWorkspaceById',
+	'POST /workspaces/updateWorkspace': 'WorkspacesController.updateWorkspace',
     'GET /analysis/getSamplesByProjectId': 'AnalysisController.getSamplesByProjectId',
     'POST /analysis/createAnalysis': 'AnalysisController.createAnalysis',
 
