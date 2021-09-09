@@ -93,7 +93,33 @@ module.exports = {
     },
 
     onImportSuccess: function (analysis) {
-        return Analysis.updateOne({ id: analysis.id }, { status: Analysis.statuses.ANALYZED, analyzed: new Date() })
+        let db;
+        let collectionName = Analysis.getMongoCollectionName(analysis.id)
+
+        return MongodbService.mongodbConnect()
+            .then(function (mdb) {
+                db = mdb
+                let database = db.db('genomics');
+                let collection = database.collection(collectionName)
+                let pipeline = MongodbService.pipelineCountVariants()
+
+                return new Promise(function (resolve, reject) {
+                    collection.aggregate(pipeline, { allowDiskUse: true }).toArray(function (err, result) {
+                        if (err) {
+                            return reject(err)
+                        }
+
+                        return resolve(result);
+                    })
+                })
+            })
+            .then(count => {
+                if (db) {
+                    db.close();
+                }
+                let total = count[0] ? count[0].count : 0
+                return Analysis.updateOne({ id: analysis.id }, { status: Analysis.statuses.ANALYZED, analyzed: new Date(), variants: total })
+            })
     },
 
     onImportError: function (analysis) {

@@ -23,6 +23,10 @@ module.exports = {
             type: 'string',
             required: true
         },
+        is_deleted: {
+            type: 'number',
+            defaultsTo: 0
+        },
         createdAt: {
 			type: 'ref',
 			columnType: 'timestamp',

@@ -95,7 +95,8 @@
 			allowNull: true
         },
         pipeline_id: {
-            type: 'number'
+            type: 'number',
+			allowNull: true
         }
 	},
 

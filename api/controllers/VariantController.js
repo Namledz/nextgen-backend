@@ -526,5 +526,49 @@ module.exports = {
 			}
 		})
     },
+
+	exportVariants: (req, res) => {
+		const variants = req.body.data
+		const name = 'LIST_' + randomstring.generate({ charset: 'numeric', length: 10 })
+		const exportFilePath = `${sails.config.mountFolder}/${sails.config.exportFolder}/${name}.tsv`;
+		const urlDownload = `${sails.config.exportFolder}/${name}.tsv`;
+
+		const header = `GENE\tTRANSCRIPT\tHGVSC\tP.NOMEN\tCOVERAGE\tFUNCTION\tLOCATION\tCLINVAR\tCLASSIFICATION\tGNOMAD_ALL\tGNOMAD_AMR\tGNOMAD_AFR\tRSID\tREF\tALT\tCOSMIC\tPOSITION\n`
+		let content = ''
+
+		variants.forEach(e => {
+			content += `${e.gene}\t${e.transcript}\t${e.hgvsc}\t${e.p_nomen}\t${e.coverage}\t${e.func}\t${e.location}\t${e.clinvar}\t${e.classification}\t${e.gnomad_all}\t${e.rsId}\t${e.ref}\t${e.alt}\t${e.cosmic}\t${e.position}\n`
+		})
+
+		let body = header + content
+
+		return new Promise(function (resolve, reject) {
+			fs.writeFile(exportFilePath, body, function (err) {
+				if (err) {
+					throw ResponseService.customError('Export error!')
+				}
+
+				return resolve()
+			})
+		})
+			.then(result => {
+				return s3Service.generateUrl(urlDownload)
+			})
+			.then(url => {
+				return res.json({ status: "success", message: "Export Successfully!", url: url })
+			})
+			.catch(error => {
+				if (error.isCustomError) {
+					return res.json({
+						status: 'error',
+						message: error.message
+					})
+				}
+				else {
+					console.log(error);
+					return res.json({ status: 'error', message: "Unknown error" })
+				}
+			})
+	}
 };
 
