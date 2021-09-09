@@ -67,10 +67,6 @@
 			type: 'string',
 			allowNull: true
 		},
-		upload_id: {
-			type: 'number',
-			allowNull: true
-		},
 		file_path: {
 			type: 'string',
 			allowNull: true
@@ -95,7 +91,8 @@
 			allowNull: true
         },
         pipeline_id: {
-            type: 'number'
+            type: 'number',
+            allowNull: true
         }
 	},
 

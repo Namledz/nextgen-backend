@@ -112,14 +112,20 @@ module.exports = {
 	createAnalysis: async (analysis) => {
 		let result = await Analysis.create(analysis).fetch();
 
-		let upload = await Uploads.findOne({ id: analysis.upload_id });
+        let upload = await Uploads.find({ sample_id: result.sample_id });
 
-		let destination = `${sails.config.userFolder}/${result.user_id}/${result.id}/${upload.upload_name}`
-		let source = upload.file_path
+        let promises = [];
 
-		let copyVcfFile = await s3Service.copyObject(source, destination)
+        upload.forEach(e => {
+            let destination = `${sails.config.userFolder}/${result.user_id}/${result.id}/${e.upload_name}`
+            let source = e.file_path
 
-		return copyVcfFile;
+            promises.push(s3Service.copyObject(source, destination))
+        })
+
+        let copyFiles = await Promise.all(promises)
+
+		return copyFiles;
 
 	}
 }
