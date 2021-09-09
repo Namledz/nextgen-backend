@@ -29,8 +29,9 @@ module.exports = {
 			columnType: 'text',
 			allowNull: true
 		},
-		upload_id: {
-            type: 'number'
+		sample_id: {
+            type: 'number',
+            allowNull: true
 		},
 		createdAt: {
 			type: 'ref',
