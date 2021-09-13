@@ -41,6 +41,10 @@ module.exports = {
             type: 'string',
             allowNull: true
         },
+        complete_status: {
+            type: 'number',
+            allowNull: true
+        },
 		createdAt: {
 			type: 'ref',
 			columnType: 'timestamp',

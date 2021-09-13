@@ -256,7 +256,7 @@ module.exports = {
     
     getSamplesByProjectId: (req, res) => {
 
-        return PromiseBlueBird.all([Pipelines.find(), Samples.find()])
+        return PromiseBlueBird.all([Pipelines.find(), Samples.find({complete_status: 1})])
             .spread((pipelineData, sample) => {
                 if(pipelineData.length == 0) {
                     throw ResponseService.customError('No pipeline!');

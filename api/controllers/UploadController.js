@@ -15,39 +15,39 @@ module.exports = {
                 return res.json({ status: 'success', uploadId: result.UploadId });
             }).catch(error => {
                 console.log("Error@UploadController-createMultipartUpload: ", error);
-                return res.json({ error: 'error' });
+               return res.json({ status: 'error', message: 'Unkown Error!' })
             })		
 	},
 
     getSignedAuth: (req, res) => {
         let uploadName = req.body.uploadName;
         let partNumber = req.body.partNumber;
-		let uploadId = req.body.uploadId;
+		let uploadMultipartId = req.body.uploadMultipartId;
         let user = req.user;
 
 		let designation = `${sails.config.userFolder}/${user.id}/uploads/${uploadName}`;
-        s3Service.getSignedUrl(designation, partNumber, uploadId)
+        s3Service.getSignedUrl(designation, partNumber, uploadMultipartId)
             .then(result => {
                 return res.json({ status: 'success', preSignedUrl: result });
             }).catch(error => {
                 console.log("Error@UploadController-getSignedAuth: ", error);
-                return res.json({ error: 'error' });
+               return res.json({ status: 'error', message: 'Unkown Error!' })
             })
 	},
 
 	completeMultipartUpload: (req, res) => {
 		let uploadName = req.body.uploadName;
         let parts = req.body.parts;
-		let uploadId = req.body.uploadId;
+		let uploadMultipartId = req.body.uploadMultipartId;
         let user = req.user;
 
 		let designation = `${sails.config.userFolder}/${user.id}/uploads/${uploadName}`;
-        s3Service.completeMultipartUpload(designation, parts, uploadId)
+        s3Service.completeMultipartUpload(designation, parts, uploadMultipartId)
             .then(result => {
                 return res.json({ status: 'success', result });
             }).catch(error => {
                 console.log("Error@UploadController-completeMultipartUpload: ", error);
-                return res.json({ error: 'error' });
+               return res.json({ status: 'error', message: 'Unkown Error!' })
             })
 	},
 
@@ -63,14 +63,16 @@ module.exports = {
             upload_name: postFileInfor.upload_name,
             user_created: user.id,
             file_path: `${sails.config.userFolder}/${user.id}/uploads/${postFileInfor.upload_name}`,
-            is_deleted: 0
+            is_deleted: 0,
+            upload_status: 1
         }
 
         let sampleInfor = {
             name: postFileInfor.sample_name,
             user_id: user.id,
             file_size: postFileInfor.file_size,
-            file_type: postFileInfor.file_type
+            file_type: postFileInfor.file_type,
+            complete_status: 1
         }
 
         return Uploads.create(uploadInfor).fetch()
@@ -126,7 +128,8 @@ module.exports = {
             upload_name: uploadInformation.upload_name,
             user_created: user.id,
             file_path: `${sails.config.userFolder}/${user.id}/uploads/${uploadInformation.upload_name}`,
-            is_deleted: 0
+            is_deleted: 0,
+            upload_status: 0
         }
 
         return Uploads.create(uploadInfor).fetch()
@@ -162,7 +165,8 @@ module.exports = {
             name: reqInfor.sample_name,
             user_id: user.id,
             file_size: reqInfor.file_size,
-            file_type: reqInfor.file_type
+            file_type: reqInfor.file_type,
+            complete_status: 0
         }
         return Samples.create(sampleInfor).fetch()
             .then(sample => {
@@ -189,6 +193,31 @@ module.exports = {
                 throw ResponseService.customError('Sample created failed!');
             })
             .then(data => {
+                return res.json({
+                    status: 'success',
+                    message: 'Successfully!'
+                })
+            })
+            .catch(error => {
+                if (ResponseService.isCustomError(error)) {
+                    return res.json({
+                        status: 'error',
+                        message: error.message
+                    })
+                }
+                else {
+                    console.log(error);
+                    return res.json({ status: 'error', message: 'Unkown Error!' })
+                }
+            })
+    },
+
+    updateStatusUploadFastQ: (req, res) => {
+        let uploadId = req.body.uploadId;
+        let uploadStatus = req.body.uploadStatus;
+
+        return Uploads.update({id: uploadId}, {upload_status: uploadStatus})
+            .then(upload => {
                 return res.json({
                     status: 'success',
                     message: 'Successfully!'
@@ -237,11 +266,14 @@ module.exports = {
             case 'size':
                 sortField = `u.file_size ${direction}`
                 break;
+            case 'status':
+                sortField = `u.upload_status ${direction}`
+                break;
             case 'createdAt':
                 sortField = `u.createdAt ${direction}`
                 break;
 			default:
-				sortField = `u.${column} ${direction}`
+				sortField = `u.createdAt desc`
 		}
 
 		let sqlSearchTerm = sqlString.escape('%' + searchTerm + '%')
@@ -249,7 +281,6 @@ module.exports = {
 		if (searchTerm != '') {
 			searchFilter = ` AND ( u.original_name LIKE ${sqlSearchTerm}
 				OR u.file_type LIKE ${sqlSearchTerm}
-				OR w.name LIKE ${sqlSearchTerm}
 				)`
 		}
 
@@ -267,6 +298,7 @@ module.exports = {
 				u.original_name,
 				u.file_type,
 				u.file_size,
+                u.upload_status,
 				u.createdAt
 			FROM 
 				uploads as u
@@ -287,6 +319,7 @@ module.exports = {
 				data.rows.forEach(e => {
 					e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
 					e.file_size = `${e.file_size}`
+                    e.upload_status = Uploads.getUploadStatus(e.upload_status)
 				})
 				return res.json({
 					items: data.rows,

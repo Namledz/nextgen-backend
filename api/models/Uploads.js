@@ -50,6 +50,10 @@
             type: 'number',
             allowNull: true
         },
+        upload_status: {
+            type: 'number',
+            allowNull: true
+        },
 		createdAt: {
 			type: 'ref',
 			columnType: 'timestamp',
@@ -65,6 +69,19 @@
 
 	file_types: {
 		LIST : ['vcf','fastq']
-	}
+	},
+
+	getUploadStatus: (status) => {
+		switch (status) {
+			case 0:
+				return 'Uploading'
+			case 1:
+				return 'Completed'
+			case 2:
+				return 'Error'
+			default:
+				return 'N/A'
+		}
+	},
 };
 

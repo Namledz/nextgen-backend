@@ -97,6 +97,7 @@ module.exports.routes = {
 	'POST /uploadFileInfor': 'UploadController.uploadFileInfor',
     'POST /createUploadFastQ': 'UploadController.createUploadFastQ',
     'POST /createSampleFastQ': 'UploadController.createSampleFastQ',
+    'POST /updateStatusUploadFastQ': 'UploadController.updateStatusUploadFastQ',
 	'POST /upload': 'UploadController.find',
 	'DELETE /upload/deleteUploadFile/:id': 'UploadController.deleteUploadFile',
 	'GET /upload/getListWorkspace': 'UploadController.getListWorkspace',

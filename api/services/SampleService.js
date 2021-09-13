@@ -45,17 +45,5 @@ module.exports = {
 		}
 		throw ResponseService.customError('No sample!');
 
-	},
-
-
-	createSample: (fileUploaded) => {
-		let sampleName = fileUploaded.sample_name.substring(0, fileUploaded.sample_name.lastIndexOf(`.${fileUploaded.file_type}`));
-
-		let data = {
-			user_id: fileUploaded.user_created,
-			name: sampleName
-		}
-
-		return Samples.create(data).fetch()
 	}
 }
