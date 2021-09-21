@@ -335,6 +335,24 @@ module.exports = {
                     return res.json({ status: 'error' })
                 }
 			})
+	},
+
+	getListEmail: (req,res) => {
+		let data = []
+		Users.find({status: 0})
+			.then(result => {
+				result.forEach(e => {
+					data.push({
+						id: e.id,
+						text: e.email
+					})
+				})
+				return res.json({data})
+			})
+			.catch(error => {
+				console.log(error)
+				return res.json({status: 'error'})
+			})
 	}
 };
 

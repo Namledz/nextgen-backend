@@ -320,6 +320,45 @@ module.exports = {
                 return res.json({status: 'error'})
             })
 
-    }
+    },
+
+	reAnalyzeAnalysis: (req,res) => {
+		let ids = req.body.id
+		let promise = []
+
+		ids.forEach(e => {
+			promise.push(Analysis.findOne(e))
+		})
+
+		return PromiseBlueBird.all(promise)
+			.then(data => {
+				if (data.filter(e => e.status == Analysis.statuses.ANALYZED).length == promise.length) {
+					let task = []
+					data.forEach(e => {
+						task.push(Analysis.update(e.id, {status: Analysis.statuses.QUEUING}))
+					})
+					return PromiseBlueBird.all(task)
+				}
+				throw ResponseService.customError('Your analysis has not been analyzed before!');
+			})
+			.then(result => {
+				return res.json({
+					status: 'success',
+					message: 'Re-Analyze Successfully!'
+				})
+			})
+			.catch(error => {
+				if (ResponseService.customError(error)) {
+					return res.json({
+                        status: 'error',
+                        message: error.message
+                    })
+				}else {
+                    console.log(error);
+                    return res.json({ status: 'error' })
+                }
+			})
+	},
+	
 };
 
