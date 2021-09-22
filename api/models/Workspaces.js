@@ -39,6 +39,11 @@ module.exports = {
 			columnType: 'text',
 			allowNull: true
 		},
+		access_user_ids: {
+			type: 'string',
+			columnType: 'text',
+			allowNull: true
+		},
 		is_deleted: {
 			type: 'number',
 			defaultsTo: 0

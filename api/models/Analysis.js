@@ -97,7 +97,12 @@
         pipeline_id: {
             type: 'number',
 			allowNull: true
-        }
+        },
+		access_user_ids: {
+			type: 'string',
+			columnType: 'text',
+			allowNull: true
+		},
 	},
 
 	statuses: {

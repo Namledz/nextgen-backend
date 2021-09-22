@@ -11,6 +11,7 @@ const PromiseBlueBird = require('bluebird');
 
 module.exports = {
     listWorkspaces: (req, res) => {
+		let id = req.user.id
 		let searchTerm = req.body.searchTerm
 		let filter = req.body.filter
 		let grouping = req.body.grouping
@@ -32,6 +33,7 @@ module.exports = {
 				OR workspace.number LIKE ${sqlSearchTerm}
                 OR p.name LIKE ${sqlSearchTerm} )`
 		}
+		searchFilter = `)`
 
 		let queryString = `
             SELECT
@@ -50,6 +52,8 @@ module.exports = {
 			LEFT JOIN users as u ON u.id = workspace.user_created_id
 			LEFT JOIN pipeline as p ON p.id = workspace.pipeline
 			WHERE workspace.is_deleted = 0
+			AND ( workspace.user_created_id = ${id}
+			OR FIND_IN_SET(${id}, workspace.access_user_ids)
 			${searchFilter}`
 
         let queryStringCount = queryString
@@ -339,7 +343,7 @@ module.exports = {
 
 	getListEmail: (req,res) => {
 		let data = []
-		Users.find({status: 0})
+		Users.find({status: 0, id : {'!=': user.id} })
 			.then(result => {
 				result.forEach(e => {
 					data.push({
@@ -353,6 +357,121 @@ module.exports = {
 				console.log(error)
 				return res.json({status: 'error'})
 			})
+	},
+
+	shareWorkspace: (req,res) => {
+		let emailIDs = req.body.emailIDs
+		let ids = req.body.ids
+		let task = [];
+		let element;
+
+		Workspaces.find({id: { in : ids} })
+			.then(result => {
+				result.forEach(e => {
+					if (e.access_user_ids) {
+						let array = e.access_user_ids.split(',')
+						let newArr = array.filter(r => emailIDs.includes(r))
+						if (newArr.length > 0 ) {
+							let err = new Error(`${e.name} is already shared to this user!`);
+							err.isCustomError = true;
+							throw err
+						}
+
+						element = (array.concat(emailIDs)).join()
+						task.push(Workspaces.update({id: e.id}, {access_user_ids: element}).fetch())
+					} else {
+						element = emailIDs.join()
+						task.push(Workspaces.update({id: e.id}, {access_user_ids: element}).fetch())
+					}
+				})
+				return PromiseBlueBird.all(task)
+			})
+			.then(result=> {
+				return res.json({
+					status: 'success',
+					message: 'Shared Successfully !'
+				})
+			})	
+			.catch(error => {
+				if(error.isCustomError) {
+                    return res.json({
+                        status: 'error',
+                        message: error.message
+                    })
+                }
+                else {
+                    console.log(error);
+                    return res.json({ status: 'error' })
+                }
+			})
+	},
+	
+	getListSharedAnalysis: (req,res) => {
+		let user = req.user
+
+		let queryStr = `
+		LEFT JOIN users as u
+		ON a.user_id = u.id
+		LEFT JOIN samples as s
+		ON s.id = a.sample_id
+		LEFT JOIN workspace as w
+		ON a.project_id = w.id
+		LEFT JOIN pipeline as p
+		ON a.pipeline_id = p.id
+		WHERE a.is_deleted = 0
+		AND FIND_IN_SET(${user.id}, a.access_user_ids)
+	`
+
+	let queryStringFind = `
+		SELECT
+			a.id,
+			a.name,
+			a.createdAt,
+			a.updatedAt,
+			u.email,
+			u.role,
+			s.name as sample_name,
+			w.name as project_name,
+			w.id as project_id,
+			a.analyzed,
+			a.variants,
+			a.size,
+			a.status,
+			a.p_type as type,
+			p.name as pipeline_name
+		FROM 
+			analysis as a
+	${queryStr}
+	`
+
+	let queryStringCount = `
+		SELECT COUNT (*) as total
+		FROM
+			analysis as a
+		${queryStr}
+	`
+
+	PromiseBlueBird.all([Analysis.getDatastore().sendNativeQuery(queryStringFind), Analysis.getDatastore().sendNativeQuery(queryStringCount)])
+		.spread((data, count) => {
+			data.rows.forEach(e => {
+				e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
+				e.updatedAt = `${moment(e.updatedAt).format('MM/DD/YYYY')}`
+				e.analyzed = e.status != Analysis.statuses.ANALYZED ? '' : `${moment(e.analyzed).format('MM/DD/YYYY')}`
+				e.status = AnalysisService.getAnalysisStatus(e.status);
+				e.size = e.size
+			})
+			return res.json({
+				items: data.rows,
+				total: count.rows[0].total
+			})
+		})
+		.catch(error => {
+			console.log("Error ", error)
+			return res.json({
+				items: [],
+				total: 0
+			})
+		})
 	}
 };
 

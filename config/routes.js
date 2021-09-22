@@ -39,6 +39,8 @@ module.exports.routes = {
 	'POST /analysis/list/:id' : 'AnalysisController.list',
 	'DELETE /analysis/deleteAnalysis/:id' : 'AnalysisController.deleteAnalysis',
 	'POST /workspaces/list' : 'WorkspacesController.listWorkspaces',
+	'POST /workspaces/shareWorkspace' : 'WorkspacesController.shareWorkspace',
+	'POST /workspaces/getListSharedAnalysis' : 'WorkspacesController.getListSharedAnalysis',
 	'POST /getLineageDetail' : 'SarcovController.getLineageDetail',
 
 	'GET /workspaces/get-workspace-name': 'WorkspacesController.getProjectName',
@@ -48,6 +50,8 @@ module.exports.routes = {
     'GET /analysis/getSamplesByProjectId': 'AnalysisController.getSamplesByProjectId',
     'POST /analysis/createAnalysis': 'AnalysisController.createAnalysis',
     'POST /analysis/reAnalyzeAnalysis': 'AnalysisController.reAnalyzeAnalysis',
+    'GET /analysis/getListEmail': 'AnalysisController.getListEmail',
+    'POST /analysis/shareAnalysis': 'AnalysisController.shareAnalysis',
 
 	//SamplesController
 	'POST /samples/list': 'SamplesController.list',

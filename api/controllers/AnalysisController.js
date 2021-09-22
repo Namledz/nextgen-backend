@@ -359,6 +359,71 @@ module.exports = {
                 }
 			})
 	},
-	
+
+	getListEmail: (req,res) => {
+		let user = req.user
+		let data = []
+		Users.find({status: 0, id : {'!=': user.id} })
+			.then(result => {
+				result.forEach(e => {
+					data.push({
+						id: e.id,
+						text: e.email
+					})
+				})
+				return res.json({data})
+			})
+			.catch(error => {
+				console.log(error)
+				return res.json({status: 'error'})
+			})
+	},
+
+	shareAnalysis: (req,res) => {
+		let emailIDs = req.body.emailIDs
+		let ids = req.body.ids
+		let task = [];
+		let element;
+
+		Analysis.find({id: { in : ids} })
+			.then(result => {
+				result.forEach(e => {
+					if (e.access_user_ids) {
+						let array = e.access_user_ids.split(',')
+						let newArr = array.filter(r => emailIDs.includes(r))
+						if (newArr.length > 0 ) {
+							let err = new Error(`${e.name} is already shared to this user!`);
+							err.isCustomError = true;
+							throw err
+						}
+
+						element = (array.concat(emailIDs)).join()
+						task.push(Analysis.update({id: e.id}, {access_user_ids: element}).fetch())
+					} else {
+						element = emailIDs.join()
+						task.push(Analysis.update({id: e.id}, {access_user_ids: element}).fetch())
+					}
+				})
+				return PromiseBlueBird.all(task)
+			})
+			.then(result=> {
+				return res.json({
+					status: 'success',
+					message: 'Shared Successfully !'
+				})
+			})	
+			.catch(error => {
+				if(error.isCustomError) {
+                    return res.json({
+                        status: 'error',
+                        message: error.message
+                    })
+                }
+                else {
+                    console.log(error);
+                    return res.json({ status: 'error' })
+                }
+			})
+	}
 };
 
