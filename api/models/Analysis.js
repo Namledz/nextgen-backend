@@ -67,10 +67,6 @@
 			type: 'string',
 			allowNull: true
 		},
-		upload_id: {
-			type: 'number',
-			allowNull: true
-		},
 		file_path: {
 			type: 'string',
 			allowNull: true

@@ -18,10 +18,6 @@
 			type: 'string',
 			allowNull: true
 		},
-		sample_name: {
-			type: 'string',
-			allowNull: true
-		},
 		file_size: {
 			type: 'number',
 			allowNull: true
@@ -46,6 +42,18 @@
 			type: 'number',
 			allowNull: true
 		},
+        sample_id: {
+			type: 'number',
+			allowNull: true
+		},
+        fastq_pair_index: {
+            type: 'number',
+            allowNull: true
+        },
+        upload_status: {
+            type: 'number',
+            allowNull: true
+        },
 		createdAt: {
 			type: 'ref',
 			columnType: 'timestamp',
@@ -61,6 +69,19 @@
 
 	file_types: {
 		LIST : ['vcf','fastq']
-	}
+	},
+
+	getUploadStatus: (status) => {
+		switch (status) {
+			case 0:
+				return 'Uploading'
+			case 1:
+				return 'Completed'
+			case 2:
+				return 'Error'
+			default:
+				return 'N/A'
+		}
+	},
 };
 

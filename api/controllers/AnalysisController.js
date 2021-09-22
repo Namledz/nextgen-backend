@@ -256,12 +256,12 @@ module.exports = {
     
     getSamplesByProjectId: (req, res) => {
 
-        return PromiseBlueBird.all([Pipelines.find(), Uploads.find({is_deleted: 0})])
-            .spread((pipelineData, upload) => {
+        return PromiseBlueBird.all([Pipelines.find(), Samples.find({complete_status: 1})])
+            .spread((pipelineData, sample) => {
                 if(pipelineData.length == 0) {
                     throw ResponseService.customError('No pipeline!');
                 }
-                else if(upload.length == 0) {
+                else if(sample.length == 0) {
                     throw ResponseService.customError('No sample!');
                 }
                 else {
@@ -272,10 +272,12 @@ module.exports = {
                         }
                         return obj;
                     })
-                    let responseSample = upload.map(el => {
+                    let responseSample = sample.map(el => {
                         let obj = {
                             id: el.id,
-                            sample_name: el.sample_name
+                            sample_name: el.name,
+                            file_size: el.file_size,
+                            file_type: el.file_type
                         }
                         return obj;
                     })
@@ -300,15 +302,10 @@ module.exports = {
     createAnalysis: async (req, res) => {
         let data = req.body;
 
-        return Uploads.findOne({ id: data.upload_id })
-            .then((upload) => {
-                data.user_id = req.user.id;
-                data.p_type = upload.file_type;
-                data.size = upload.file_size;
-                data.status = Analysis.statuses.QUEUING;
+        data.user_id = req.user.id;
+        data.status = Analysis.statuses.QUEUING;
 
-                return AnalysisService.createAnalysis(data)
-            })
+        return AnalysisService.createAnalysis(data)
             .then((analysis) => {
                 return res.json({
                     status: 'success',

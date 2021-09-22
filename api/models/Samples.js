@@ -33,6 +33,18 @@ module.exports = {
 			type: 'string',
 			allowNull: true
 		},
+        file_size: {
+            type: 'number',
+            allowNull: true
+        },
+        file_type: {
+            type: 'string',
+            allowNull: true
+        },
+        complete_status: {
+            type: 'number',
+            allowNull: true
+        },
 		createdAt: {
 			type: 'ref',
 			columnType: 'timestamp',
