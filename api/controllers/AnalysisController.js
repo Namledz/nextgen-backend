@@ -299,7 +299,7 @@ module.exports = {
 
     },
 
-    createAnalysis: async (req, res) => {
+    createAnalysis: (req, res) => {
         let data = req.body;
 
         data.user_id = req.user.id;

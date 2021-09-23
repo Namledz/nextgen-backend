@@ -240,8 +240,8 @@ module.exports = {
                 if (user) {
                     let promises = [];
                     let url = `${sails.config.front_end.host}/auth/set-password/${user.id}`;
-                    let userfile = `${sails.config.mountFolder}/${sails.config.userFolder}/${user.id}`;
-                    let command = `mkdir -p ${userfile} && mkdir -p ${userfile}/uploads `;
+                    // let command = `mkdir -p ${userfile} && mkdir -p ${userfile}/uploads `;
+					let command = `echo`;
                     let mailOptions = {
                         from: sails.config.SMTP_HOST.from,
                         to: user.email,

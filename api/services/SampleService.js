@@ -20,21 +20,21 @@ module.exports = {
 
 		if (sample[0]) {
 			let fileUploaded = await Uploads.findOne({ id: sample[0].upload_id });
-			let updateSample;
+			let updateAnalysis;
 			
 			if (!fileUploaded) {
-				updateSample = await Analysis.update({ id: sample[0].id }, { status: Analysis.statuses.ERROR })
+				updateAnalysis = await Analysis.update({ id: sample[0].id }, { status: Analysis.statuses.ERROR })
 				throw ResponseService.customError('Sample Error!');
 			} else {
 				let uploadName = fileUploaded.upload_name.substring(0, fileUploaded.upload_name.lastIndexOf('.vcf'));
-				let filePath = `${sails.config.userFolder}/${sample[0].user_id}/${sample[0].id}/${uploadName}.anno`
-				updateSample = await Analysis.update({ id: sample[0].id }, { status: Analysis.statuses.ANALYZING, file_path: filePath })
+				let filePath = `${sails.config.analysisFolder}/${sample[0].id}/${uploadName}.anno`
+				updateAnalysis = await Analysis.update({ id: sample[0].id }, { status: Analysis.statuses.ANALYZING, file_path: filePath })
 			}
 
 			let data = {
 				id: sample[0].id,
 				bed_file: '',
-				file_path: `${sails.config.userFolder}/${sample[0].user_id}/${sample[0].id}/${fileUploaded.upload_name}`,
+				file_path: `${sails.config.analysisFolder}/${sample[0].id}/${fileUploaded.upload_name}`,
 				genome_build: 'hg19',
 				vcf_type: 'WGS',
 				user_id: sample[0].user_id,

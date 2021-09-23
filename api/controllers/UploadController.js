@@ -9,7 +9,7 @@ module.exports = {
         let contentType = req.body.contentType;
         let user = req.user;
 
-		let designation = `${sails.config.userFolder}/${user.id}/uploads/${uploadName}`;
+		let designation = `${sails.config.uploadFolder}/${uploadName}`;
         s3Service.createMultipartUpload(designation, contentType)
             .then(result => {
                 return res.json({ status: 'success', uploadId: result.UploadId });
@@ -25,7 +25,7 @@ module.exports = {
 		let uploadMultipartId = req.body.uploadMultipartId;
         let user = req.user;
 
-		let designation = `${sails.config.userFolder}/${user.id}/uploads/${uploadName}`;
+		let designation = `${sails.config.uploadFolder}/${uploadName}`;
         s3Service.getSignedUrl(designation, partNumber, uploadMultipartId)
             .then(result => {
                 return res.json({ status: 'success', preSignedUrl: result });
@@ -41,7 +41,7 @@ module.exports = {
 		let uploadMultipartId = req.body.uploadMultipartId;
         let user = req.user;
 
-		let designation = `${sails.config.userFolder}/${user.id}/uploads/${uploadName}`;
+		let designation = `${sails.config.uploadFolder}/${uploadName}`;
         s3Service.completeMultipartUpload(designation, parts, uploadMultipartId)
             .then(result => {
                 return res.json({ status: 'success', result });
@@ -62,7 +62,7 @@ module.exports = {
             file_type: postFileInfor.file_type,
             upload_name: postFileInfor.upload_name,
             user_created: user.id,
-            file_path: `${sails.config.userFolder}/${user.id}/uploads/${postFileInfor.upload_name}`,
+            file_path: `${sails.config.uploadFolder}/${postFileInfor.upload_name}`,
             is_deleted: 0,
             upload_status: 1
         }
@@ -127,7 +127,7 @@ module.exports = {
             file_type: uploadInformation.file_type,
             upload_name: uploadInformation.upload_name,
             user_created: user.id,
-            file_path: `${sails.config.userFolder}/${user.id}/uploads/${uploadInformation.upload_name}`,
+            file_path: `${sails.config.uploadFolder}/${uploadInformation.upload_name}`,
             is_deleted: 0,
             upload_status: 0
         }

@@ -33,10 +33,6 @@
 			type: 'string',
 			allowNull: true
 		},
-		igv_local_path: {
-			type: 'string',
-			allowNull: true
-		},
 		sample_id: {
 			type: 'number',
             allowNull: true
