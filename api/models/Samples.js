@@ -45,6 +45,10 @@ module.exports = {
             type: 'number',
             allowNull: true
         },
+		is_deleted: {
+			type: 'number',
+			defaultsTo: 0
+		},
 		createdAt: {
 			type: 'ref',
 			columnType: 'timestamp',

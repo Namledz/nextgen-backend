@@ -258,50 +258,56 @@ module.exports = {
 
 		switch (column) {
 			case 'name':
-				sortField = `u.original_name ${direction}`
+				sortField = `s.name ${direction}`
+				break;
+			case 'id':
+				sortField = `s.id ${direction}`
 				break;
             case 'type':
-                sortField = `u.file_type ${direction}`
+                sortField = `s.file_type ${direction}`
                 break;
             case 'size':
-                sortField = `u.file_size ${direction}`
+                sortField = `s.file_size ${direction}`
                 break;
-            case 'status':
-                sortField = `u.upload_status ${direction}`
+            case 'patient_name':
+                sortField = `p.first_name ${direction}, p.last_name ${direction}`
                 break;
             case 'createdAt':
-                sortField = `u.createdAt ${direction}`
+                sortField = `s.createdAt ${direction}`
                 break;
 			default:
-				sortField = `u.createdAt desc`
+				sortField = `s.createdAt desc`
 		}
 
 		let sqlSearchTerm = sqlString.escape('%' + searchTerm + '%')
 
 		if (searchTerm != '') {
-			searchFilter = ` AND ( u.original_name LIKE ${sqlSearchTerm}
-				OR u.file_type LIKE ${sqlSearchTerm}
+			searchFilter = ` AND ( s.name LIKE ${sqlSearchTerm}
+				OR s.file_type LIKE ${sqlSearchTerm}
+                OR p.first_name LIKE ${sqlSearchTerm}
+                OR p.last_name LIKE ${sqlSearchTerm}
 				)`
 		}
 
 		let queryString = `
 			WHERE
-				u.is_deleted = 0
-			AND u.file_type IN ( ${sqlString.escape(type)} )
-			AND u.user_created = ${sqlString.escape(req.user.id)}
+				s.is_deleted = 0
+			AND s.file_type IN ( ${sqlString.escape(type)} )
+			AND s.user_id = ${sqlString.escape(req.user.id)}
 			${searchFilter}
 		`
 
 		let queryStringFind = `
 			SELECT
-				u.id,
-				u.original_name,
-				u.file_type,
-				u.file_size,
-                u.upload_status,
-				u.createdAt
+				s.id,
+				s.name,
+				s.file_type,
+				s.file_size,
+				s.createdAt,
+                CONCAT (p.first_name , ' ', p.last_name) as patient_name
 			FROM 
-				uploads as u
+				samples as s
+            LEFT JOIN patients_information as p ON p.sample_id = s.id
 			${queryString}
 			ORDER BY ${sortField}
 			LIMIT ${pageSize} OFFSET ${skip}
@@ -310,16 +316,18 @@ module.exports = {
 		let queryStringCount = `
 			SELECT COUNT (*) as total
 			FROM 
-				uploads as u
+				samples as s
+            LEFT JOIN patients_information as p ON p.sample_id = s.id
 			${queryString}	
 		`
 
+        // console.log(JSON.stringify(queryStringFind))
 		PromiseBlueBird.all([Uploads.getDatastore().sendNativeQuery(queryStringFind), Uploads.getDatastore().sendNativeQuery(queryStringCount)])
 			.spread((data, count) => {
 				data.rows.forEach(e => {
 					e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
 					e.file_size = `${e.file_size}`
-                    e.upload_status = Uploads.getUploadStatus(e.upload_status)
+                    // e.upload_status = Uploads.getUploadStatus(e.upload_status)
 				})
 				return res.json({
 					items: data.rows,
@@ -335,20 +343,117 @@ module.exports = {
 			})
 	},
 
+	// find: (req,res) => {
+	// 	let searchTerm = req.body.searchTerm
+	// 	let filter = req.body.filter
+
+	// 	let sorting = req.body.sorting
+	// 	let column = sorting.column
+	// 	let direction = sorting.direction
+
+	// 	let paginator = req.body.paginator
+	// 	let pageSize = paginator.pageSize ? paginator.pageSize : 10
+	// 	let page = paginator.page
+	// 	let skip = pageSize * (page - 1)
+	// 	let searchFilter = ''
+	// 	let sortField = ''
+
+	// 	let type = filter.type ? filter.type : Uploads.file_types.LIST
+
+
+	// 	switch (column) {
+	// 		case 'name':
+	// 			sortField = `u.original_name ${direction}`
+	// 			break;
+    //         case 'type':
+    //             sortField = `u.file_type ${direction}`
+    //             break;
+    //         case 'size':
+    //             sortField = `u.file_size ${direction}`
+    //             break;
+    //         case 'status':
+    //             sortField = `u.upload_status ${direction}`
+    //             break;
+    //         case 'createdAt':
+    //             sortField = `u.createdAt ${direction}`
+    //             break;
+	// 		default:
+	// 			sortField = `u.createdAt desc`
+	// 	}
+
+	// 	let sqlSearchTerm = sqlString.escape('%' + searchTerm + '%')
+
+	// 	if (searchTerm != '') {
+	// 		searchFilter = ` AND ( u.original_name LIKE ${sqlSearchTerm}
+	// 			OR u.file_type LIKE ${sqlSearchTerm}
+	// 			)`
+	// 	}
+
+	// 	let queryString = `
+	// 		WHERE
+	// 			u.is_deleted = 0
+	// 		AND u.file_type IN ( ${sqlString.escape(type)} )
+	// 		AND u.user_created = ${sqlString.escape(req.user.id)}
+	// 		${searchFilter}
+	// 	`
+
+	// 	let queryStringFind = `
+	// 		SELECT
+	// 			u.id,
+	// 			u.original_name,
+	// 			u.file_type,
+	// 			u.file_size,
+    //             u.upload_status,
+	// 			u.createdAt
+	// 		FROM 
+	// 			uploads as u
+	// 		${queryString}
+	// 		ORDER BY ${sortField}
+	// 		LIMIT ${pageSize} OFFSET ${skip}
+	// 	`
+
+	// 	let queryStringCount = `
+	// 		SELECT COUNT (*) as total
+	// 		FROM 
+	// 			uploads as u
+	// 		${queryString}	
+	// 	`
+
+	// 	PromiseBlueBird.all([Uploads.getDatastore().sendNativeQuery(queryStringFind), Uploads.getDatastore().sendNativeQuery(queryStringCount)])
+	// 		.spread((data, count) => {
+	// 			data.rows.forEach(e => {
+	// 				e.createdAt = `${moment(e.createdAt).format('MM/DD/YYYY')}`
+	// 				e.file_size = `${e.file_size}`
+    //                 e.upload_status = Uploads.getUploadStatus(e.upload_status)
+	// 			})
+	// 			return res.json({
+	// 				items: data.rows,
+	// 				total: count.rows[0].total
+	// 			})
+	// 		})
+	// 		.catch(error => {
+	// 			console.log("Error ", error)
+	// 			return res.json({
+	// 				items: [],
+	// 				total: 0
+	// 			})
+	// 		})
+	// },
+
 	deleteUploadFile: (req,res) => {
 		let id = req.params.id
 
-		Uploads.findOne(id)
+		return Samples.findOne(id)
 			.then(result => {
 				if (result) {
-					return Uploads.update({id}, {is_deleted: 1}).fetch()
+                    return Samples.update({id}, {is_deleted: 1}).fetch()
 				}
 				throw new Error('Error!')
 			})
 			.then(result => {
 				return res.json({
 					status: 'success',
-                    message: 'Deleted file successfully!'
+                    message: 'Deleted sample successfully!'
 				})
 			})
 			.catch(error => {
