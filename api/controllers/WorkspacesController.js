@@ -342,6 +342,7 @@ module.exports = {
 	},
 
 	getListEmail: (req,res) => {
+		let user = req.user
 		let data = []
 		Users.find({status: 0, id : {'!=': user.id} })
 			.then(result => {
@@ -472,6 +473,21 @@ module.exports = {
 				total: 0
 			})
 		})
+	},
+
+
+	getAccessUserIDsOfWorkspace: (req,res) => {
+		let id = req.body.id
+
+		Workspaces.findOne({id: id})
+			.then(result => {
+				let data = (result.access_user_ids).split(',')
+				return res.send(data)
+			})
+			.catch(error => {
+				console.log(error)
+				return res.json({status: 'error'})
+			})
 	}
 };
 

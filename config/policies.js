@@ -39,6 +39,19 @@ module.exports.policies = {
 
 	FilterController: {
 		'*': ['auth']
+	},
+
+	WorkspacesController: {
+		'getWorkspaceDashboard': ['auth', 'sharedWorkspaces']
+	},
+
+	VariantController: {
+		'variant': ['auth','sharedAnalysis']
+	},
+
+	AnalysisController : {
+		'getAnalysisName': ['auth','sharedAnalysis'],
+		'list': ['auth', 'sharedWorkspaces']
 	}
 
 };

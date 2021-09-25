@@ -112,6 +112,11 @@
 
 	getMongoCollectionName: (analysisId) => {
 		return sails.config.MONGO.ANALYSIS_PREFIX + analysisId
+	},
+
+	beforeCreate: function (analysis, proceed) {
+		analysis.access_user_ids = analysis.user_id.toString()
+		return proceed();
 	}
 };
 
