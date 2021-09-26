@@ -420,7 +420,7 @@ module.exports = {
 		LEFT JOIN pipeline as p
 		ON a.pipeline_id = p.id
 		WHERE a.is_deleted = 0
-		AND FIND_IN_SET(${user.id}, a.access_user_ids)
+		AND (FIND_IN_SET(${user.id}, a.access_user_ids) AND a.user_id != ${user.id} )
 	`
 
 	let queryStringFind = `
