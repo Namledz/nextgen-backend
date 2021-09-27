@@ -60,5 +60,10 @@ module.exports = {
 		}
 	},
 
+	beforeCreate: function (workspace, proceed) {
+		workspace.access_user_ids = workspace.user_created_id.toString()
+		return proceed();
+	}
+
 };
 

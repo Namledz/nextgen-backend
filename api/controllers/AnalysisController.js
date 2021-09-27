@@ -421,6 +421,20 @@ module.exports = {
                     return res.json({ status: 'error' })
                 }
 			})
+	},
+
+	getAccessUserIDsOfAnalysis: (req,res) => {
+		let id = req.body.id
+
+		Analysis.findOne({id: id})
+			.then(result => {
+				let data = (result.access_user_ids).split(',')
+				return res.send(data)
+			})
+			.catch(error => {
+				console.log(error)
+				return res.json({status: 'error'})
+			})
 	}
 };
 
